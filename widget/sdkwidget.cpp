@@ -4,6 +4,9 @@
 #include<QDir>
 #include<QFileDialog>
 #include<QTextStream>
+#include<QMessageBox>
+#include<util/system.h>
+#include<QDebug>
 SdkWidget::SdkWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::SdkWidget)
@@ -21,6 +24,7 @@ SdkWidget::SdkWidget(QWidget *parent) :
     ui->cbox_filter->addItem(QString::fromUtf8("第三方应用"),"VENDOR_ONLY");
     connect(ui->cbox_filter,&QComboBox::currentTextChanged,this,&SdkWidget::doFilter);
     connect(ui->btn_export,&QPushButton::clicked,this,&SdkWidget::saveReport);
+    connect(ui->lineEdit_search,&QLineEdit::textChanged,this,&SdkWidget::doFilter);
 }
 
 SdkWidget::~SdkWidget()
@@ -37,23 +41,40 @@ void SdkWidget::showResult(QList<SpecTest *> list)
 void SdkWidget::doFilter()
 {
     QString type = ui->cbox_filter->currentData().toString();
-    updateTable(getTestsByType(type));
+    updateTable(searchedList(typedList(type)));
 }
 
-QList<SpecTest *> SdkWidget::getTestsByType(QString type)
+QList<SpecTest *> SdkWidget::typedList(QString type)
 {
     QList<SpecTest*> list;
     if(type == "ALL"){
         list = mList;
     }else if(type == "MTK_ONLY"){
         foreach(SpecTest*test,mList){
-            if(test->getName().contains("mediatek")){
+            if(test->getName().contains("mediatek",Qt::CaseInsensitive)||test->getName().contains("mtk",Qt::CaseInsensitive)){
                 list.append(test); }
         }
     }else if(type == "VENDOR_ONLY"){
         foreach(SpecTest*test,mList){
-            if(!test->getName().contains("google") && !test->getName().contains("android") && !test->getName().contains("mediatek")){
+            if(!test->getName().contains("google",Qt::CaseInsensitive)
+                    && !test->getName().contains("android",Qt::CaseInsensitive)
+                    && !test->getName().contains("mediatek",Qt::CaseInsensitive)
+                    && !test->getName().contains("mtk",Qt::CaseInsensitive)){
                 list.append(test); }
+        }
+    }
+    return list;
+}
+
+QList<SpecTest *> SdkWidget::searchedList(QList<SpecTest *> list)
+{
+    QString key = ui->lineEdit_search->text();
+    if(key.isEmpty()){
+        return list;
+    }
+    foreach(SpecTest*test,list){
+        if(!test->getName().contains(key,Qt::CaseInsensitive)){
+            list.removeAll(test);
         }
     }
     return list;
@@ -61,18 +82,22 @@ QList<SpecTest *> SdkWidget::getTestsByType(QString type)
 
 void SdkWidget::saveReport()
 {
-    QString filename = QFileDialog::getExistingDirectory(this,QString::fromUtf8("报告保存至"),QDir::homePath())
-            .append("/SdkReport.txt");
+    QString dirPath = QFileDialog::getExistingDirectory(this,QString::fromUtf8("报告保存至"),QDir::homePath());
+    if(dirPath.isEmpty()){
+        return;
+    }
+    QString filename = dirPath.append("/SdkReport.txt");
     QFile file(filename);
     if(file.open(QIODevice::WriteOnly|QIODevice::Truncate)){
         QTextStream out(&file);
-        out<<QString::fromUtf8("不满足要求的应用:\n");
+        out<<QString::fromUtf8("不满足要求的应用:").append(System::getSeparator());
         foreach(SpecTest*test,mList){
             if(test->getStatus() == SpecTest::FAIL){
-                out<<QString("%1--->%2\n").arg(test->getName()).arg(test->getResult());
+                out<<QString("%1--->%2").arg(test->getName()).arg(test->getResult()).append(System::getSeparator());
             }
         }
-       file.close();
+        file.close();
+        QMessageBox::information(this,QString::fromUtf8("提示"),QString::fromUtf8("报告已保存至%1").arg(filename));
     }
 }
 

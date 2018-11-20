@@ -23,6 +23,8 @@ public:
     QString getCurrentDevice();
     QString companyLimit();
     QStringList getPackages();
+    int dataSize();
+    int systemAvailable();
 private:
     static QString device;
     static SpecUtil* sInstance;

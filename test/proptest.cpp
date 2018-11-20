@@ -25,7 +25,7 @@ const QString PropTest::PROP_VENDOR_DEVICE = "ro.vendor.product.device";
 const QString PropTest::PROP_VENDOR_NAME = "ro.vendor.product.name";
 const QString PropTest::PROP_VENDOR_MANUFACTURER = "ro.vendor.product.manufacturer";
 const QString PropTest::PROP_VENDOR_BRAND = "ro.vendor.product.brand";
-
+const QString PropTest::PROP_RCSA = "ro.com.google.acsa";
 PropTest::PropTest(QString device, QString prop, QString name, QString expect)
 {
     this->name = name;

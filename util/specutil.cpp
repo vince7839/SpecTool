@@ -151,3 +151,27 @@ QStringList SpecUtil::getPackages()
 {
     return packages;
 }
+
+int SpecUtil::dataSize()
+{
+    int kb = 0;
+   QString line = Executor::waitFinish(QString("adb -s %1 shell df /data").arg(device)).split(System::getSeparator()).at(1);
+   QStringList fields = line.simplified().split(" ");
+   if(fields.size() >= 2){
+       kb = fields.at(1).toInt();
+   }
+   qDebug()<<"data disk size"<<kb;
+   return kb;
+}
+
+int SpecUtil::systemAvailable()
+{
+    int kb = 0;
+    QString line = Executor::waitFinish(QString("adb -s %1 shell df /system").arg(device)).split(System::getSeparator()).at(1);
+    QStringList fields = line.simplified().split(" ");
+    if(fields.size() >= 4){
+        kb = fields.at(3).toInt();
+    }
+    qDebug()<<"system available size:"<<kb;
+    return kb;
+}

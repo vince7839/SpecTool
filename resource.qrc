@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/resource">
+        <file alias="app_icon">resource/icon.png</file>
+        <file alias="info_txt">resource/info.txt</file>
+        <file alias="report_html">resource/report.html</file>
+    </qresource>
+</RCC>

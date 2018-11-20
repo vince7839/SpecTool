@@ -25,12 +25,14 @@ public:
     static const QString FACE_LOCK;
     static const QString LOVELY_FONT;
     static const QString NAV_GO;
-    PackageTest(QString device,QString package,bool expect = true);
+    static const QString GOOGLE_MESSAGE;
+    PackageTest(QString device,QString package,bool expect = true,QString name = "");
     void run();
     QString getName();
     QString getExpect();
     QString getResult();
     Status getStatus();
+    void initNames();
 private:
     QString device;
     QString package;

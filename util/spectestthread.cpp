@@ -15,7 +15,7 @@ void SpecTestThread::run()
     qDebug()<<"SpecTestThread::run:"<<list.size();
     for(int i = 0; i < list.size();i++){
         list.at(i)->run();
-        emit testProgress(i,list.size() - 1);
+        emit testProgress(i + 1,list.size());
     }
    emit testFinished(list);
 }

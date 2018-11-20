@@ -1,0 +1,6 @@
+SpecTool
+Makefile
+*.o
+ui_*
+moc_*
+

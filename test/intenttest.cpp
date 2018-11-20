@@ -19,13 +19,13 @@ void IntentTest::run()
         expect = "1";
         name = QString::fromUtf8("Browser测试1");
         package = PackageTest::CHROME;
-        intent = QString("adb -s %1 shell am start -W -a android.intent.action.WIDGET -d 'https://www.wikipedia.org/'|grep -c %2").arg(device).arg(package);
+        intent = QString("adb -s %1 shell am start -W -a android.intent.action.VIEW -d 'https://www.wikipedia.org/'|grep -c %2").arg(device).arg(package);
         break;
     case Browser_2:
         expect = "1";
         name = QString::fromUtf8("Browser测试2");
         package = PackageTest::CHROME;
-        intent = QString("adb -s %1 shell am start -W -a android.intent.action.WIDGET -d 'http://www.wikipedia.org/'|grep -c %2").arg(device).arg(package);
+        intent = QString("adb -s %1 shell am start -W -a android.intent.action.VIEW -d 'http://www.wikipedia.org/'|grep -c %2").arg(device).arg(package);
         break;
     case Gallery_1:
         expect = "1";
@@ -130,6 +130,7 @@ void IntentTest::run()
     if(!package.isEmpty()){
         Executor::waitFinish(QString("adb shell am force-stop %1").arg(package));
     }
+    cmd = intent;
     result = Executor::waitFinish(intent).simplified();
     status = result == expect ? PASS : FAIL;
     qDebug()<<"IntentTest::run:"<<result;
@@ -153,4 +154,9 @@ QString IntentTest::getExpect()
 SpecTest::Status IntentTest::getStatus()
 {
     return status;
+}
+
+QString IntentTest::getCmd()
+{
+    return cmd;
 }

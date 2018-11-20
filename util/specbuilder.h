@@ -10,7 +10,7 @@ public:
     static const int GMS_NOT_REQUIRED = 1;
     static const int SMART_FEATURE_PHONE = 2;
     SpecBuilder();
-    SpecBuilder*buildPhoneType(int type);
+    SpecBuilder*buildGmsRequired(bool required);
     SpecBuilder*buildMpType(bool isMp);
     SpecBuilder*buildDevice(QString device);
     SpecBuilder*buildExpress(bool isExpress);
@@ -21,7 +21,7 @@ private:
     QString testType;
     bool isExpress = false;
     bool isMp = false;
-    int phoneType;
+    bool gmsRequired = true;
 };
 
 #endif // SPECBUILDER_H

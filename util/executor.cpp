@@ -33,6 +33,8 @@ QString Executor::waitFinish(QString cmd, QStringList arg)
     if(p->waitForFinished(60000)){
         output = p->readAll();
     }
-   // qDebug()<<"Executor::waitFinish:"<<output;
+    if(!cmd.contains("packages") && !cmd.contains("features")){
+        qDebug()<<"Executor::waitFinish:"<<output;
+    }
     return output;
 }

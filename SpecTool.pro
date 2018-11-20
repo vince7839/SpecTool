@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core  gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,13 +25,14 @@ SOURCES +=\
     util/specbuilder.cpp \
     util/spectestthread.cpp \
     util/specutil.cpp \
-    widget/buildspecwidget.cpp \
     widget/mainwindow.cpp \
     test/sdktest.cpp \
     main.cpp \
     widget/resultwidget.cpp \
     widget/sdkwidget.cpp \
-    util/system.cpp
+    util/system.cpp \
+    widget/infowidget.cpp \
+    widget/popwidget.cpp
 
 HEADERS  += \
     test/cmdtest.h \
@@ -47,15 +48,19 @@ HEADERS  += \
     util/specbuilder.h \
     util/spectestthread.h \
     util/specutil.h \
-    widget/buildspecwidget.h \
     widget/mainwindow.h \
     test/sdktest.h \
     widget/resultwidget.h \
     widget/sdkwidget.h \
-    util/system.h
+    util/system.h \
+    widget/infowidget.h \
+    widget/popwidget.h
 
 FORMS    += \
-    widget/buildspecwidget.ui \
     widget/mainwindow.ui \
     widget/resultwidget.ui \
-    widget/sdkwidget.ui
+    widget/sdkwidget.ui \
+    widget/infowidget.ui
+
+RESOURCES += \
+    resource.qrc

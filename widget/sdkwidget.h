@@ -15,7 +15,8 @@ public:
     ~SdkWidget();
     void showResult(QList<SpecTest*> list);
     void doFilter();
-    QList<SpecTest*> getTestsByType(QString type);
+    QList<SpecTest*> typedList(QString type);
+    QList<SpecTest*> searchedList(QList<SpecTest*> list);
     void saveReport();
     void updateTable(QList<SpecTest*> list);
 private:

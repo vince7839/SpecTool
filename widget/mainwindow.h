@@ -14,11 +14,17 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    bool prepare();
 public slots:
     void updateDeviceBox(QStringList list);
     void start();
     void updateProgressDialog(int value,int max);
     void hideOption();
+    void enabledProjectOption(bool gmsRequired);
+    void showInfo();
+    void showAbout();
+    void init();
+    void moveToCenter(QWidget*parent);
 protected:
     void closeEvent(QCloseEvent *event);
 private:

@@ -28,7 +28,10 @@ public:
         SPEC_LOCATION_MODE,
         SPEC_BLUETOOTH_OFF,
         SPEC_ROTATION_OFF,
-        SPEC_COMPANY_LIMIT
+        SPEC_COMPANY_LIMIT,
+        SPEC_SYSTEM_AVAILABLE,
+        SPEC_API_LEAVEL,
+        SPEC_APP_LINK
     };
     DefaultTest(QString device,SpecType type,QString expect = "");
     void run();

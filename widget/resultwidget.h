@@ -14,10 +14,14 @@ public:
     ~ResultWidget();
 public slots:
     void showResult(QList<SpecTest*> list);
+    void saveReport();
+    void showMenu(QPoint pos);
+    void retestItem();
+    void copyCmd();
 private:
     Ui::ResultWidget *ui;
     QString device;
-    QList<SpecTest*> list;
+    QList<SpecTest*> mList;
 };
 
 #endif // RESULTWIDGET_H

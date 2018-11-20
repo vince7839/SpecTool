@@ -27,6 +27,16 @@
       <widget class="QComboBox" name="cbox_filter"/>
      </item>
      <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>在当前分类中搜索</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit_search"/>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>

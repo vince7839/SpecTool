@@ -113,7 +113,7 @@ void MainWindow::showInfo()
 
 void MainWindow::showAbout()
 {
-    QMessageBox::information(this,QString::fromUtf8("关于"),QString::fromUtf8("问题反馈请联系QQ785453694"));
+    QMessageBox::information(this,QString::fromUtf8("关于"),QString::fromUtf8("问题反馈QQ:785453694"));
 }
 
 void MainWindow::init()

@@ -1,0 +1,9 @@
+<font color='green'>[2018-11-14]</font>
+将报告改为和CTS相同的网页形式，方便GMS组检查
+<font color='green'>[2018-11-13]</font>
+增加google.xml中youtube的APP link检查，按照工具检查到的youtube版本进行判断
+<font color='green'>[2018-11-12]</font>
+1.增加system分区检查，4G标准130MB，8G标准220MB
+2.右键可以复测和复制命令，主要用于Express+的失败项
+<font color='green'>[2018-11-09]</font>
+增加Google Message，Carrier Service，ACSA排查

@@ -3,6 +3,8 @@
 #include<test/proptest.h>
 #include<util/executor.h>
 #include<QDebug>
+#include<QDir>
+#include<test/packagetest.h>
 const QString DefaultTest::FEATURE_RU = "com.google.android.feature.RU";
 
 DefaultTest::DefaultTest(QString device,SpecType type, QString expect)
@@ -78,15 +80,16 @@ void DefaultTest::run()
         name = QString::fromUtf8("OEM Unlocking默认关闭");
         Executor::waitFinish(QString("adb -s %1 reboot bootloader").arg(device));
         QString output = Executor::waitFinish("fastboot flashing get_unlock_ability");
-         result = output.contains("unlock_ability = 0") ? "Yes" : "No";
+        result = output.contains("unlock_ability = 0") ? "Yes" : "No";
         status = result == "Yes" ? PASS: FAIL;
         expect = "Yes";
         Executor::waitFinish("fastboot reboot");
-        }
+    }
         break;
     case SPEC_RAM_1G:
         name = QString::fromUtf8("RAM是否小于1G");
         result =  util->ramLimit() ? "Yes" : "No";
+        status = result == expect ? PASS : FAIL;
         break;
     case SPEC_PATCH_VALID:
         name = QString::fromUtf8("安全Patch是否1个月之内");
@@ -118,7 +121,7 @@ void DefaultTest::run()
     }
         break;
     case SPEC_FOTA_VERSION:{
-        name = QString::fromUtf8("FOTA版本>=5.22");
+        name = QString::fromUtf8("广生FOTA版本>=5.22");
         result = Executor::waitFinish("adb shell dumpsys package com.adups.fota|grep versionName").trimmed().split("=").last();
         status = result >= "5.22" ? PASS : FAIL;
     }
@@ -126,16 +129,16 @@ void DefaultTest::run()
     case SPEC_DATA_SIZE:
     {
         name = QString::fromUtf8("data分区大小");
-        QString output = Executor::waitFinish(QString("adb -s %1 shell df -h /data|grep data").arg(device)).simplified();
-        int kb = Executor::waitFinish(QString("adb -s %1 shell df /data|grep data").arg(device)).simplified().split(" ").at(1).toInt();
-        result= output.split(" ").at(1);
+        int kb = util->dataSize();
+        float limitGb = 0;
         if(kb > 1024*1024*4) {
-            expect = ">5.1G";
-            status = kb > 5.1*1024*1024 ? PASS : FAIL;
+            limitGb = 5.1;
         }else{
-            expect = ">1.5G";
-            status = kb > 1.5*1024*1024 ? PASS : FAIL;
+            limitGb = 1.5;
         }
+        expect = QString::fromUtf8("> %1 GB").arg(limitGb);
+        status = kb > limitGb*1024*1024 ? PASS : FAIL;
+        result = QString("%1 GB").arg(((float)kb)/(1024*1024));
     }
         break;
     case SPEC_LOCATION_MODE:
@@ -165,7 +168,56 @@ void DefaultTest::run()
         }else{
             status = PASS;
         }
+    }
+        break;
+    case SPEC_SYSTEM_AVAILABLE:{
+        int dataKb = util->dataSize();
+        int systemAvailableKb = util->systemAvailable();
+        int limitMb = 0;
+        if(dataKb >= 1024*1024*4){
+            limitMb = 220;
+        }else{
+            limitMb = 130;
         }
+        name = QString::fromUtf8("System区可用空间");
+        status = systemAvailableKb > limitMb*1024 ? PASS : FAIL;
+        expect = QString("> %1 MB").arg(limitMb);
+        result = QString("%1 MB").arg((float)systemAvailableKb/1024);
+    }
+        break;
+    case SPEC_API_LEAVEL:
+        expect = util->expectApiLevel();
+        result = util->getProp(PropTest::PROP_API_LEVEL);
+        status =  result == expect ? PASS : WARNING;
+        name = QString::fromUtf8("First API Level（MP软件可不填）");
+        break;
+    case SPEC_APP_LINK:{
+        name = QString::fromUtf8("google.xml中APP Link检测");
+        QString filename = "google.xml";
+        Executor::waitFinish(QString("adb -s %1 pull /etc/sysconfig/google.xml %2").arg(device).arg(filename));
+        QFile file(filename);
+        if(file.exists() && file.open(QIODevice::ReadOnly)){
+            QString content = file.readAll();
+            status = FAIL;
+            if(util->hasPackage(PackageTest::YOUTUBE)){
+                status = content.contains(PackageTest::YOUTUBE) ? PASS : FAIL;
+                result = QString::fromUtf8(status == PASS ? "Youtube已配置" : "Youtube未配置");
+                expect = QString::fromUtf8("配置Youtube");
+            }else if(util->hasPackage(PackageTest::YOUTUBE_GO)){
+                status = content.contains(PackageTest::YOUTUBE_GO) ? PASS : FAIL;
+                result = QString::fromUtf8(status == PASS ? "Youtube Go已配置" : "Youtube Go未配置");
+                expect = QString::fromUtf8("配置Youtube Go");
+            }else{
+                result = QString::fromUtf8("项目未预置youtube应用");
+                status = WARNING;
+            }
+            file.close();
+            file.remove();
+        }else{
+            result = QString::fromUtf8("未读取到google.xml");
+        }
+    }
+        break;
     }
 }
 

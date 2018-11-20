@@ -34,6 +34,7 @@ public:
     QString getResult();
     QString getExpect();
     SpecTest::Status getStatus();
+    QString getCmd();
 private:
     QString name;
     QString expect;
@@ -42,6 +43,7 @@ private:
     QString device;
     IntentType type;
     SpecUtil*util;
+    QString cmd;
 };
 
 #endif // INTENTTEST_H

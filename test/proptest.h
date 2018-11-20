@@ -31,6 +31,7 @@ public:
     static const QString PROP_VENDOR_NAME;
     static const QString PROP_VENDOR_MANUFACTURER;
     static const QString PROP_VENDOR_BRAND;
+    static const QString PROP_RCSA;
     PropTest(QString device,QString prop,QString name = "", QString expect = "");
     void run();
     QString getName();
