@@ -49,7 +49,7 @@ void IntentTest::run()
         expect = "1";
         name = QString::fromUtf8("Gallery测试4");
         package = PackageTest::PHOTOS;
-        intent = QString("adb -s %1 shell am start -W -a com.android.camera.action.REWIDGET -t image/*|grep -c %2").arg(device).arg(package);
+        intent = QString("adb -s %1 shell am start -W -a com.android.camera.action.REVIEW -t image/*|grep -c %2").arg(device).arg(package);
         break;
     case Messaging_1:
         expect = "1";
@@ -104,16 +104,13 @@ void IntentTest::run()
         intent  = QString("adb -s %1 shell ime list -a | grep mId | grep -v -c mId=com.google.android").arg(device);
         break;
     case Voice_Assistant:
+    {
         expect = "1";
         name = QString::fromUtf8("Voice Assistant测试");
-        package  = "com.google.android.googlequicksearchbox";
-        intent  = QString("adb -s 1% shell am start -W -a android.intent.action.VOICE_COMMAND|grep -c %2").arg(device).arg(package);
-        break;
-    case Voice_Assistant_Go:
-        expect = "1";
-        name = QString::fromUtf8("Voice Assistant测试");
-        package = "com.google.android.apps.assistant";
-        intent  = QString("adb -s %1 shell am start -W -a android.intent.action.ASSIST|grep -c %2").arg(device).arg(package);
+        package  = util->isGoVersion() ? "com.google.android.apps.assistant" : "com.google.android.googlequicksearchbox";
+        QString action = util->isGoVersion() ? "android.intent.action.ASSIST" : "android.intent.action.VOICE_COMMAND";
+        intent  = QString("adb -s %1 shell am start -W -a %2|grep -c %3").arg(device).arg(action).arg(package);
+    }
         break;
     case Search:
         name = QString::fromUtf8("Search测试");
@@ -125,7 +122,7 @@ void IntentTest::run()
         expect = "1";
         name = QString::fromUtf8("Calendar测试");
         package = "com.google.android.calendar";
-        intent = QString("adb -s %1 shell am start -W -a android.intent.action.WIDGET -d content://com.android.calendar/time/1410665898789|grep -c %2").arg(device).arg(package);
+        intent = QString("adb -s %1 shell am start -W -a android.intent.action.VIEW -d content://com.android.calendar/time/1410665898789|grep -c %2").arg(device).arg(package);
     }
     if(!package.isEmpty()){
         Executor::waitFinish(QString("adb shell am force-stop %1").arg(package));

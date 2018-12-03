@@ -1,5 +1,11 @@
 #ifndef PACKAGETEST_H
 #define PACKAGETEST_H
+
+/*
+ *@Author liaowenxing
+ *  这个类用于判断手机中是否安装了指定的apk
+ */
+
 #include<test/spectest.h>
 #include<util/specutil.h>
 class PackageTest : public SpecTest
@@ -26,6 +32,7 @@ public:
     static const QString LOVELY_FONT;
     static const QString NAV_GO;
     static const QString GOOGLE_MESSAGE;
+    static const QString QUICK_SEARCH_BOX;
     PackageTest(QString device,QString package,bool expect = true,QString name = "");
     void run();
     QString getName();

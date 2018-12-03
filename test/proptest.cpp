@@ -32,6 +32,7 @@ PropTest::PropTest(QString device, QString prop, QString name, QString expect)
     this->prop = prop;
     this->expect = expect;
     this->device = device;
+    this->cmd = QString("adb -s %1 shell getprop %2").arg(device).arg(prop);
     util = SpecUtil::getInstance(device);
     if(this->name.isEmpty()){
         this->name = prop;
@@ -41,13 +42,11 @@ PropTest::PropTest(QString device, QString prop, QString name, QString expect)
 void PropTest::run()
 {
     result = util->getProp(prop);
-  if(result == expect && !expect.isEmpty() ){
-        status = PASS;
-    }else if(result != expect && !expect.isEmpty()){
-        status = FAIL;
+    if(expect.isEmpty()){
+        status = result.isEmpty() ? FAIL : PASS;
     }else{
-      status = UNKNOWN;
-  }
+        status = expect == result ? PASS : FAIL;
+    }
 }
 
 QString PropTest::getName()
@@ -68,5 +67,10 @@ QString PropTest::getResult()
 SpecTest::Status PropTest::getStatus()
 {
     return status;
+}
+
+QString PropTest::getCmd()
+{
+    return this->cmd;
 }
 

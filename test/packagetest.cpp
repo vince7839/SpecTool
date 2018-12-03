@@ -22,6 +22,7 @@ const QString PackageTest::FACE_LOCK = "com.android.facelock";
 const QString PackageTest::LOVELY_FONT = "com.valmedia.fdelux";
 const QString PackageTest::NAV_GO ="com.google.android.apps.navlite";
 const QString PackageTest::GOOGLE_MESSAGE = "com.google.android.apps.messaging";
+const QString PackageTest::QUICK_SEARCH_BOX = "com.google.android.googlequicksearchbox";
 PackageTest::PackageTest(QString device, QString package, bool expect, QString name)
 {
     initNames();

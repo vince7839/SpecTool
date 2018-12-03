@@ -114,16 +114,17 @@ bool SpecUtil::hasPackage(QString package)
     return exist;
 }
 
-bool SpecUtil::patchValid()
+int SpecUtil::patchDayCount()
 {
+    int dayCount = 0;
     QString date = getProp(PropTest::PROP_SECURITY);
-    QRegExp re("[0-9]+-([0-9]+)-[0-9]+");
+    QRegExp re("([0-9]+)-([0-9]+)-([0-9]+)");
     if(re.exactMatch(date)){
-        int patchMonth = re.cap(1).toInt();
-        int currentMonth = QDate::currentDate().month();
-        return (currentMonth - patchMonth) <= 1;
+        QDate patchDate = QDate::fromString(date,"yyyy-MM-dd");
+        QDate now = QDate::currentDate();
+        dayCount = qAbs(patchDate.daysTo(now));
     }
-    return false;
+    return dayCount;
 }
 
 QString SpecUtil::getSetting(QString type, QString key)
@@ -155,13 +156,13 @@ QStringList SpecUtil::getPackages()
 int SpecUtil::dataSize()
 {
     int kb = 0;
-   QString line = Executor::waitFinish(QString("adb -s %1 shell df /data").arg(device)).split(System::getSeparator()).at(1);
-   QStringList fields = line.simplified().split(" ");
-   if(fields.size() >= 2){
-       kb = fields.at(1).toInt();
-   }
-   qDebug()<<"data disk size"<<kb;
-   return kb;
+    QString line = Executor::waitFinish(QString("adb -s %1 shell df /data").arg(device)).split(System::getSeparator()).at(1);
+    QStringList fields = line.simplified().split(" ");
+    if(fields.size() >= 2){
+        kb = fields.at(1).toInt();
+    }
+    qDebug()<<"data disk size"<<kb;
+    return kb;
 }
 
 int SpecUtil::systemAvailable()

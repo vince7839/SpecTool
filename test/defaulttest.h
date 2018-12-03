@@ -1,6 +1,11 @@
 #ifndef DEFAULTTEST_H
 #define DEFAULTTEST_H
 
+/*
+ * @Author liaowenxing
+ * 这个类主要是一些无法使用CmdTest或者PackageTest等归类的测试
+ */
+
 #include<test/spectest.h>
 #include<util/specutil.h>
 class DefaultTest : public SpecTest
@@ -31,7 +36,9 @@ public:
         SPEC_COMPANY_LIMIT,
         SPEC_SYSTEM_AVAILABLE,
         SPEC_API_LEAVEL,
-        SPEC_APP_LINK
+        SPEC_APP_LINK,
+        SPEC_ILLEGAL_FONTS,
+        SPEC_DEFAULT_ASSISTANT
     };
     DefaultTest(QString device,SpecType type,QString expect = "");
     void run();

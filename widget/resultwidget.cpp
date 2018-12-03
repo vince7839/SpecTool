@@ -65,6 +65,7 @@ void ResultWidget::showResult(QList<SpecTest *> list)
         ui->tableWidget->setItem(i,1,expect);
         ui->tableWidget->setItem(i,2,result);
     }
+    ui->tableWidget->resizeRowsToContents();
     showMaximized();
 }
 
@@ -93,8 +94,8 @@ void ResultWidget::saveReport()
             passCount++;
             color = "green";
         }
-        QString row = QString("<tr><td>%1</td><td>%2</td><td  bgcolor=%3>%4</td></tr>\n")
-                .arg(test->getName()).arg(test->getExpect()).arg(color).arg(test->getResult());
+        QString row = QString("<tr><td>%1</td><td>%2</td><td  bgcolor=%3>%4</td></tr>%5")
+                .arg(test->getName()).arg(test->getExpect()).arg(color).arg(test->getResult().replace("\n","<br />")).arg(System::getSeparator());
         table.append(row);
     }
     content.replace("<SpecTool:toolVersion>",System::VERSION)

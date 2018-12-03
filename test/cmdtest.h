@@ -3,6 +3,11 @@
 
 #include<test/spectest.h>
 
+/*
+ * @Author liaowenxing
+ * 这个类继承自SpecTest，主要执行一些用特殊命令获取结果的测试
+ */
+
 class CmdTest : public SpecTest
 {
 public:

@@ -5,6 +5,7 @@
 #include<QDebug>
 #include<QDir>
 #include<test/packagetest.h>
+#include<test/intenttest.h>
 const QString DefaultTest::FEATURE_RU = "com.google.android.feature.RU";
 
 DefaultTest::DefaultTest(QString device,SpecType type, QString expect)
@@ -25,6 +26,7 @@ void DefaultTest::run()
     case SPEC_IS_GMS_GO:
         name = QString::fromUtf8("GMS包是否为Go版本");
         result =util->isGoVersion() ? "Yes" : "No";
+        status = PASS;
         break;
     case SPEC_FINGERPRINT_USER:
         name = QString::fromUtf8("fingerprint是否为user");
@@ -92,9 +94,12 @@ void DefaultTest::run()
         status = result == expect ? PASS : FAIL;
         break;
     case SPEC_PATCH_VALID:
-        name = QString::fromUtf8("安全Patch是否1个月之内");
-        status = util->patchValid() ? PASS : FAIL;
-        result = util->getProp(PropTest::PROP_SECURITY);
+    {
+        int DAY_LIMIT = util->isExpress() ? 20 : 20;
+        name = QString::fromUtf8("安全Patch是否%1天之内").arg(DAY_LIMIT);
+        status = util->patchDayCount() < DAY_LIMIT ? PASS : FAIL;
+        result = QString::fromUtf8("截至目前%1天").arg(util->patchDayCount());
+    }
         break;
     case SPEC_FINGERPRINT_LIMIT:{
         name = QString::fromUtf8("fingerprint命名规范");
@@ -189,7 +194,7 @@ void DefaultTest::run()
         expect = util->expectApiLevel();
         result = util->getProp(PropTest::PROP_API_LEVEL);
         status =  result == expect ? PASS : WARNING;
-        name = QString::fromUtf8("First API Level（MP软件可不填）");
+        name = QString::fromUtf8("First API Level（量产软件此项为空）");
         break;
     case SPEC_APP_LINK:{
         name = QString::fromUtf8("google.xml中APP Link检测");
@@ -216,6 +221,53 @@ void DefaultTest::run()
         }else{
             result = QString::fromUtf8("未读取到google.xml");
         }
+    }
+        break;
+    case SPEC_ILLEGAL_FONTS:
+    {
+        name = QString::fromUtf8("第三方字体检测");
+        expect = QString::fromUtf8("未预置");
+        status = PASS;
+        foreach(QString package,util->getPackages()){
+            if(package.contains("delux",Qt::CaseInsensitive)||package.contains("font",Qt::CaseInsensitive)){
+                status = FAIL;
+                result.append(package).append("\n");
+            }
+        }
+        if(status == PASS){
+            result = QString::fromUtf8("未预置");
+        }
+    }
+        break;
+    case SPEC_DEFAULT_ASSISTANT:
+    {
+        name = QString::fromUtf8("Google Assistant是否默认语音助手");
+        expect = "Yes";
+        QFile file(":/resource/intent_test_apk");
+        QString copyName = "IntentTest.apk";
+        file.copy(copyName);
+        if(!QFile::exists(copyName)){
+            status = FAIL;
+            result = QString::fromUtf8("无法安装测试APK");
+            break;
+        }else{
+            Executor::waitFinish(QString("adb -s %1 install %2").arg(device).arg(copyName));
+        }
+        QString package = util->isGoVersion() ? PackageTest::ASSITANT_GO : PackageTest::QUICK_SEARCH_BOX;
+        Executor::waitFinish(QString("adb -s %1 shell input keyevent --longpress KEYCODE_HOME").arg(device));
+        QString output = Executor::waitFinish(QString("adb -s %1 shell dumpsys activity").arg(device));
+        QRegExp re("Recent #0: TaskRecord\\{.*\\}");
+        re.setMinimal(true);
+        if(output.indexOf(re) != -1){
+            status = re.cap(0).contains(package) ? PASS : FAIL;
+            qDebug()<<re.cap(0);
+        }else{
+            status = FAIL;
+        }
+        result = status == PASS ? "Yes" : "No";
+        Executor::waitFinish(QString("adb -s %1 shell am force-stop %2").arg(device).arg(package));
+        Executor::waitFinish(QString("adb -s %1 uninstall %2").arg(device).arg("com.sagereal.intenttest"));
+        QFile::remove(copyName);
     }
         break;
     }

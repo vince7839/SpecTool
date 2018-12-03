@@ -1,6 +1,6 @@
 #include "system.h"
 
-const QString System::VERSION = "2018-11-13";
+const QString System::VERSION = "20181127";
 System::System()
 {
 

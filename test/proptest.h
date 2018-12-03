@@ -1,5 +1,11 @@
 #ifndef PROPTEST_H
 #define PROPTEST_H
+
+/*
+ * @Author liaowenxing
+ * 这个类用于判断一个ro值是否是我们期望的内容
+ */
+
 #include<QObject>
 #include<test/spectest.h>
 #include<util/specutil.h>
@@ -38,6 +44,7 @@ public:
     QString getExpect();
     QString getResult();
     Status getStatus();
+    QString getCmd();
 private:
     QString name;
     QString device;
@@ -46,6 +53,7 @@ private:
     QString prop;
     Status status;
     SpecUtil*util = NULL;
+    QString cmd;
 };
 
 #endif // PROPTEST_H

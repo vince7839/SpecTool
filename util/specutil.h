@@ -16,7 +16,7 @@ public:
     bool isExpress();
     bool isGoVersion();
     bool ramLimit();
-    bool patchValid();
+    int patchDayCount();
     bool hasFeature(QString feature);
     bool hasPackage(QString package);
     QString getSetting(QString type,QString key);

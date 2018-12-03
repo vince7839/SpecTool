@@ -20,7 +20,6 @@ public slots:
     void start();
     void updateProgressDialog(int value,int max);
     void hideOption();
-    void enabledProjectOption(bool gmsRequired);
     void showInfo();
     void showAbout();
     void init();

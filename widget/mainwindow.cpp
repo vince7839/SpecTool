@@ -23,10 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(listener,&DeviceListener::deviceChanged,this,&MainWindow::updateDeviceBox);
     connect(ui->btn_start,&QPushButton::clicked,this,&MainWindow::start);
     connect(ui->cbox_test,&QComboBox::currentTextChanged,this,&MainWindow::hideOption);
-    connect(ui->checkBox_gms,&QCheckBox::toggled,this,&MainWindow::enabledProjectOption);
     ui->cbox_test->addItem(QString::fromUtf8("规范检测"),"SPEC_TEST");
     ui->cbox_test->addItem(QString::fromUtf8("Target SDK检测"),"SDK_TEST");
-    ui->checkBox_gms->setChecked(true);
     this->statusBar()->addWidget(new QLabel(QString::fromUtf8("<font color='red'>Express+测试请保持手机亮屏解锁</font>")));
     QMenu* helpMenu = new QMenu(QString::fromUtf8("帮助"));
     helpMenu->addAction(QString::fromUtf8("关于"),this,&MainWindow::showAbout);
@@ -72,8 +70,8 @@ void MainWindow::start()
     builder->buildDevice(device)
             ->buildExpress(ui->checkBox_express->isChecked())
        //     ->buildMpType(ui->checkBox_mp->isChecked())
-            ->buildTestType(testType)
-            ->buildGmsRequired(ui->checkBox_gms->isChecked());
+            ->buildTestType(testType);
+       //     ->buildGmsRequired(ui->checkBox_gms->isChecked());
     SpecTestThread*thread = new SpecTestThread(builder);
     connect(thread,&SpecTestThread::testProgress,this,&MainWindow::updateProgressDialog);
     if(testType == "SPEC_TEST"){
@@ -97,14 +95,6 @@ void MainWindow::hideOption()
     ui->groupBox->setVisible(ui->cbox_test->currentData().toString() == "SPEC_TEST");
 }
 
-void MainWindow::enabledProjectOption(bool gmsRequired)
-{
-    ui->checkBox_express->setCheckable(gmsRequired);
-    ui->checkBox_express->setEnabled(gmsRequired);
- //   ui->checkBox_mp->setCheckable(gmsRequired);
-  //  ui->checkBox_mp->setEnabled(gmsRequired);
-}
-
 void MainWindow::showInfo()
 {
     InfoWidget*infoWidget = new InfoWidget;
@@ -113,7 +103,7 @@ void MainWindow::showInfo()
 
 void MainWindow::showAbout()
 {
-    QMessageBox::information(this,QString::fromUtf8("关于"),QString::fromUtf8("问题反馈请联系QQ785453694"));
+    QMessageBox::information(this,QString::fromUtf8("关于"),QString::fromUtf8("问题反馈QQ:785453694"));
 }
 
 void MainWindow::init()

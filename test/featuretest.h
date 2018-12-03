@@ -1,6 +1,10 @@
 #ifndef FEATURETEST_H
 #define FEATURETEST_H
 
+/*
+ * @Author liaowenxing
+ * 这个类判断手机是否含有某个Feature
+ */
 #include<test/spectest.h>
 
 class FeatureTest : public SpecTest

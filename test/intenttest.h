@@ -1,6 +1,11 @@
 #ifndef INTENTTEST_H
 #define INTENTTEST_H
 
+/*
+ * @Author liaowenxing
+ * 这个类主要用于Express+项目，发送一个广播来启动某个app
+ */
+
 #include <QObject>
 #include<test/spectest.h>
 #include<util/specutil.h>
@@ -24,7 +29,6 @@ public:
         Keyboard_1,
         Keyboard_2,
         Voice_Assistant,
-        Voice_Assistant_Go,
         Search,
         Calendar
     };

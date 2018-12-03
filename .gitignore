@@ -1,6 +1,10 @@
 SpecTool
+SpecTool.pro.user.*
 Makefile
 *.o
 ui_*
 moc_*
+qrc_resource.cpp
+.qmake.stash
+
 

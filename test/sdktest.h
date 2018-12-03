@@ -1,6 +1,10 @@
 #ifndef SDKTEST_H
 #define SDKTEST_H
 
+/*
+ * @Author liaowenxing
+ * 此类判断某个apk的target SDK是否是我们的期望值
+ */
 #include<test/spectest.h>
 class SdkTest : public SpecTest
 {

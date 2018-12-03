@@ -28,9 +28,10 @@ InfoWidget::InfoWidget(QWidget *parent) :
         while(!in.atEnd()){
             ui->textBrowser->append(in.readLine());
         }
-       // ui->textBrowser->setText(in.readAll());
+       // ui->textBrowser->setText(in.readAll());        
         file.close();
     }
+    ui->textBrowser->moveCursor(QTextCursor::Start);
 }
 
 InfoWidget::~InfoWidget()
