@@ -23,6 +23,7 @@ const QString PackageTest::LOVELY_FONT = "com.valmedia.fdelux";
 const QString PackageTest::NAV_GO ="com.google.android.apps.navlite";
 const QString PackageTest::GOOGLE_MESSAGE = "com.google.android.apps.messaging";
 const QString PackageTest::QUICK_SEARCH_BOX = "com.google.android.googlequicksearchbox";
+const QString PackageTest::SPEECH_SERVICES = "com.google.android.apps.speechservices";
 PackageTest::PackageTest(QString device, QString package, bool expect, QString name)
 {
     initNames();
@@ -40,7 +41,7 @@ void PackageTest::run()
 {
     bool exist = util->hasPackage(package) ;
     result = QString::fromUtf8(exist ? "已预置" : "未预置");
-    status = exist == expect ? PASS : WARNING;
+    status = exist == expect ? PASS : FAIL;
 }
 
 QString PackageTest::getName()
@@ -86,4 +87,5 @@ void PackageTest::initNames()
     names.insert(LOVELY_FONT,QString::fromUtf8("Lovely Font检测"));
     names.insert(NAV_GO,QString::fromUtf8("Nav Go检测"));
     names.insert(GOOGLE_MESSAGE,QString::fromUtf8("Google Message检测"));
+    names.insert(SPEECH_SERVICES,QString::fromUtf8("Google speech services检测"));
 }

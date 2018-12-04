@@ -108,7 +108,7 @@ bool SpecUtil::hasFeature(QString feature)
 }
 
 bool SpecUtil::hasPackage(QString package)
-{  
+{  qDebug()<<"------------"<<packages.size()<<package;
     bool exist = packages.contains(package);
     qDebug()<<"[SpecUtil::hasPackage]"<<package<<exist;
     return exist;

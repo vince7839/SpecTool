@@ -270,6 +270,42 @@ void DefaultTest::run()
         QFile::remove(copyName);
     }
         break;
+    // 2018/11/28 zhaocongcong 添加EEA规范检查
+    case SPEC_MAPVIEW_V1:
+    {
+            name = QString::fromUtf8("EEA规范检查 MapView V1 Library检测");
+            QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.maps.jar\"").arg(device));
+            if(content.isEmpty()){
+                result = QString::fromUtf8("项目未检测到 MapView V1 Library");
+                status = FAIL;
+            }else{
+                result = QString::fromUtf8("项目已检测到 MapView V1 Library");
+                status = PASS;
+            }
+     }
+        break;
+    case SPEC_GOOGLE_MEDIA_EFFECTS:
+    {
+            name = QString::fromUtf8("EEA规范检查 Google Media Effects Library检测");
+            QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.media.effects.jar\"").arg(device));
+            if(content.isEmpty()){
+                result = QString::fromUtf8("项目未检测到 Google Media Effects Library");
+                status = FAIL;
+            }else{
+                result = QString::fromUtf8("项目已检测到 Google Media Effects Library");
+                status = PASS;
+            }
+    }
+       break;
+   case SPEC_OPENMOBILEAPI:
+    {
+            name = QString::fromUtf8("查看文件是否包含服务：simalliance.openmobileapi.service");
+            QString content = Executor::waitFinish(QString("adb -s %1 shell service list").arg(device));
+            status = content.contains("simalliance.openmobileapi.service")? FAIL : PASS;
+            result = QString::fromUtf8(status == PASS ? "未包含" : "已包含");
+            expect = QString::fromUtf8("未包含");
+        }
+       break;
     }
 }
 

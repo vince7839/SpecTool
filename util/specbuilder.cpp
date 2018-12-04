@@ -14,7 +14,7 @@
 #include<test/sdktest.h>
 SpecBuilder::SpecBuilder()
 {
-    util =  SpecUtil::getInstance(device);
+    //util =  SpecUtil::getInstance(device);
 }
 
 /*
@@ -49,6 +49,7 @@ SpecBuilder *SpecBuilder::buildTestType(QString testType)
  */
 QList<SpecTest *> SpecBuilder::create()
 {
+    util =  SpecUtil::getInstance(device);
     list.clear();
     if(testType == "SDK_TEST"){
         int expect = util->isGoVersion() ? 27 : 26;
@@ -95,6 +96,7 @@ void SpecBuilder::addCommonTests()
     list.append(new PropTest(device,PropTest::PROP_CLIENTID));
     //   list.append(new PropTest(device,PropTest::PROP_CLIENTID_AM));
     //   list.append(new PropTest(device,PropTest::PROP_CLIENTID_YT));
+    qDebug()<<"-----"<<(util == NULL);
     list.append(new PropTest(device,PropTest::PROP_RCSA,"ACSA",util->hasPackage(PackageTest::GOOGLE_MESSAGE) ? "true" : "false"));
     list.append(new PropTest(device,PropTest::PROP_LOW_RAM,QString::fromUtf8("是否低内存（LOW RAM）"),util->isGoVersion() ? "true":"false"));
     list.append(new DefaultTest(device,DefaultTest::SPEC_FINGERPRINT_USER,"Yes"));
@@ -120,6 +122,20 @@ void SpecBuilder::addCommonTests()
     list.append(new PackageTest(device,PackageTest::CHROME));
     list.append(new PackageTest(device,PackageTest::PLAY_STORE));
     list.append(new PackageTest(device,PackageTest::NAV_GO,true));
+    // 2018/11/28 zhaocongcong 添加 EEA规范检查
+    list.append(new DefaultTest(device,DefaultTest::SPEC_MAPVIEW_V1));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_GOOGLE_MEDIA_EFFECTS));
+    // 2018/11/30 zhaocongcong 添加 测试建议 普通规范也需要检测蓝牙默认关闭，location默认高精度，自动旋转默认关闭等
+    list.append(new DefaultTest(device,DefaultTest::SPEC_LOCATION_MODE));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_BLUETOOTH_OFF));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_ROTATION_OFF));
+    // 2018/12/03 zhaocongcong 添加 包含android.software.device_admin 不包含android.software.managed_users
+    list.append(new FeatureTest(device,"android.software.device_admin",QString::fromUtf8("是否包含android.software.device_admin"),QString::fromUtf8("包含")));
+    list.append(new FeatureTest(device,"android.software.managed_users",QString::fromUtf8("是否包含android.software.managed_users"),QString::fromUtf8("不包含")));
+    // 2018/12/03 zhaocongcong 添加 查看文件不包含服务：simalliance.openmobileapi.service
+    list.append(new DefaultTest(device,DefaultTest::SPEC_OPENMOBILEAPI));
+    // 2018/12/04 zhaocongcong 添加 google speech services 检查
+    list.append(new PackageTest(device,PackageTest::SPEECH_SERVICES,true));
 }
 
 void SpecBuilder::addGoTests()
@@ -171,9 +187,6 @@ void SpecBuilder::addExpressTests()
     list.append(new DefaultTest(device,DefaultTest::SPEC_MANUFACTURER_LIMIT,"Yes"));
     list.append(new DefaultTest(device,DefaultTest::SPEC_MTKLOG_VERSION,"Yes"));
     list.append(new DefaultTest(device,DefaultTest::SPEC_FOTA_VERSION,"Yes"));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_LOCATION_MODE));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_BLUETOOTH_OFF));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_ROTATION_OFF));
     list.append(new PackageTest(device,"com.android.wallpaper.livepicker",false));
     list.append(new PackageTest(device,"com.android.facelock",false));
 }

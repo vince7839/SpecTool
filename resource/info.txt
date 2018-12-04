@@ -1,4 +1,9 @@
-<font color='green'>[2018-11-27]</font><font color='red'>*</font>
+<font color='green'>[2018-12-04]</font><font color='red'>*</font>
+1.增加EEA MapView V1 Library检测 和EEA Google Media Effects Library检测
+2.增加google speech services检测
+3.普通规范检测增加蓝牙默认关闭，location默认高精度，自动旋转默认关闭
+4.增加android.software.device_admin和android.software.managed_users检测
+<font color='green'>[2018-11-27]</font></font>
 安装一个APK之后测试Google Assistant是否默认启动
 <font color='green'>[2018-11-26]</font>
 1.添加长按Home键是否启动Google Assistant的检测

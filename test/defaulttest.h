@@ -38,7 +38,11 @@ public:
         SPEC_API_LEAVEL,
         SPEC_APP_LINK,
         SPEC_ILLEGAL_FONTS,
-        SPEC_DEFAULT_ASSISTANT
+        SPEC_DEFAULT_ASSISTANT,
+        // 2018/11/28 zhaocongcong 添加 EEA规范检查
+        SPEC_MAPVIEW_V1,
+        SPEC_GOOGLE_MEDIA_EFFECTS,
+        SPEC_OPENMOBILEAPI
     };
     DefaultTest(QString device,SpecType type,QString expect = "");
     void run();
