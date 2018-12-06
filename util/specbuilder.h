@@ -1,22 +1,57 @@
 #ifndef SPECBUILDER_H
 #define SPECBUILDER_H
+
+/*
+ * @Author liaowenxing
+ * 这个类使用建造者模式，通过不同的条件来为手机构建测试内容
+ */
+
 #include <QObject>
 #include<test/spectest.h>
 #include<util/specutil.h>
 class SpecBuilder
 {
 public:
-    static const int GMS_REQUIRED = 0;
-    static const int GMS_NOT_REQUIRED = 1;
-    static const int SMART_FEATURE_PHONE = 2;
     SpecBuilder();
+
+    /*
+     * 构建手机的序列号
+     */
     SpecBuilder*buildDevice(QString device);
+
+    /*
+     * 是否Express+项目
+     */
     SpecBuilder*buildExpress(bool isExpress);
+
+    /*
+     * 测试类型 规范 or SDK
+     */
     SpecBuilder*buildTestType(QString testType);
+
+    /*
+     * 构建，返回测试项的List
+     */
     QList<SpecTest*> create();
+
+    /*
+     * 所有项目都需要的测试项
+     */
     void addCommonTests();
+
+    /*
+     * Go项目独有的测试项
+     */
     void addGoTests();
+
+    /*
+     * 非Go项目独有的测试项
+     */
     void addNonGoTests();
+
+    /*
+     * Express+项目的测试项
+     */
     void addExpressTests();
 private:
     QString device;

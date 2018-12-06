@@ -5,7 +5,7 @@
 
 /*
  * @Author liaowenxing
- * 这个类继承自SpecTest，主要执行一些用特殊命令获取结果的测试
+ * 这个类继承自抽象类SpecTest，主要执行一些用特殊命令获取结果的测试
  */
 
 class CmdTest : public SpecTest

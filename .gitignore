@@ -1,10 +1,12 @@
 SpecTool
-SpecTool.pro.user.*
+SpecTool.pro.user*
 Makefile
 *.o
 ui_*
 moc_*
 qrc_resource.cpp
 .qmake.stash
+*.autosave
+spectool_plugin_import.cpp
 
 
