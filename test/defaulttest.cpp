@@ -6,8 +6,11 @@
 #include<QDir>
 #include<test/packagetest.h>
 #include<test/intenttest.h>
+#include<QThread>
 const QString DefaultTest::FEATURE_RU = "com.google.android.feature.RU";
-
+const QString DefaultTest::EEA_DEVICE = "com.google.android.feature.EEA_DEVICE";
+const QString DefaultTest::PAID_SEARCH = "com.google.android.paid.search";
+const QString DefaultTest::PAID_CHROME = "com.google.android.paid.chrome";
 DefaultTest::DefaultTest(QString device,SpecType type, QString expect)
 {
     this->device = device;
@@ -96,11 +99,37 @@ void DefaultTest::run()
     case SPEC_PATCH_VALID:
     {
         int DAY_LIMIT = util->isExpress() ? 20 : 20;
-        name = QString::fromUtf8("安全Patch是否%1天之内").arg(DAY_LIMIT);
-        status = util->patchDayCount() < DAY_LIMIT ? PASS : FAIL;
-        result = QString::fromUtf8("截至目前%1天").arg(util->patchDayCount());
+        name = QString::fromUtf8("安全Patch距离截止日期是否%1天之内").arg(DAY_LIMIT);
+        int val = util->patchDayCount();
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
         break;
+    case SPEC_8_GMS_PACKAGE:
+    {
+        int DAY_LIMIT = 20;
+        name = QString::fromUtf8("GMS包版本距离截止日期是否%1天之内").arg(DAY_LIMIT);
+        int val = util->gmsVersionDayCount();
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+        break;
+//    case SPEC_7_GMS_PACKAGE:
+//    {
+//        int DAY_LIMIT = 20;
+//        name = QString::fromUtf8("GMS包版本距离截止日期是否%1天之内").arg(DAY_LIMIT);
+//        status = PASS;
+//        result = QString::fromUtf8("永久有效");
+//    }
+//        break;
     case SPEC_FINGERPRINT_LIMIT:{
         name = QString::fromUtf8("fingerprint命名规范");
         expect = QString::fromUtf8("不含andorid,google,alps等");
@@ -129,6 +158,13 @@ void DefaultTest::run()
         name = QString::fromUtf8("广生FOTA版本>=5.22");
         result = Executor::waitFinish("adb shell dumpsys package com.adups.fota|grep versionName").trimmed().split("=").last();
         status = result >= "5.22" ? PASS : FAIL;
+    }
+        break;
+    case SPEC_YOUTUBE_GO:
+    {
+        name = QString::fromUtf8("Youtobe Go版本>=1.18.57");
+        result = Executor::waitFinish("adb shell dumpsys package com.google.android.apps.youtube.mango|grep versionName").trimmed().split("=").last();
+        status = result >= "1.18.57" ? PASS : FAIL;
     }
         break;
     case SPEC_DATA_SIZE:
@@ -255,6 +291,7 @@ void DefaultTest::run()
         }
         QString package = util->isGoVersion() ? PackageTest::ASSITANT_GO : PackageTest::QUICK_SEARCH_BOX;
         Executor::waitFinish(QString("adb -s %1 shell input keyevent --longpress KEYCODE_HOME").arg(device));
+        QThread::sleep(2);
         QString output = Executor::waitFinish(QString("adb -s %1 shell dumpsys activity").arg(device));
         QRegExp re("Recent #0: TaskRecord\\{.*\\}");
         re.setMinimal(true);
@@ -274,6 +311,7 @@ void DefaultTest::run()
     case SPEC_MAPVIEW_V1:
     {
             name = QString::fromUtf8("EEA规范检查 MapView V1 Library检测");
+            expect = QString::fromUtf8("存在");
             QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.maps.jar\"").arg(device));
             if(content.isEmpty()){
                 result = QString::fromUtf8("项目未检测到 MapView V1 Library");
@@ -287,6 +325,7 @@ void DefaultTest::run()
     case SPEC_GOOGLE_MEDIA_EFFECTS:
     {
             name = QString::fromUtf8("EEA规范检查 Google Media Effects Library检测");
+            expect = QString::fromUtf8("存在");
             QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.media.effects.jar\"").arg(device));
             if(content.isEmpty()){
                 result = QString::fromUtf8("项目未检测到 Google Media Effects Library");
@@ -306,6 +345,128 @@ void DefaultTest::run()
             expect = QString::fromUtf8("未包含");
         }
        break;
+   case SPEC_EEADCS:
+    {
+        name = QString::fromUtf8("是否为欧盟市场");
+        expect = QString::fromUtf8("同时声明");
+        QString result1 = QString::fromUtf8(util->hasFeature(EEA_DEVICE) ? "已声明" : "未声明" ) + "com.google.android.feature.EEA_DEVICE(欧盟)\n";
+        QString result2 = QString::fromUtf8(util->hasFeature(PAID_SEARCH) ? "已声明" : "未声明" ) + "com.google.android.paid.search(欧盟)\n";
+        QString result3 = QString::fromUtf8(util->hasFeature(PAID_CHROME) ? "已声明" : "未声明" ) + "com.google.android.paid.chrome(欧盟)";
+        result = result1 + result2 + result3;
+        if(util->hasFeature(EEA_DEVICE) && util->hasFeature(PAID_SEARCH) && util->hasFeature(PAID_CHROME)){
+            status = PASS;
+        }else{
+            status = FAIL;
+        }
+    }
+       break;
+   case SPEC_CTS_CTSV_R10:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-10-15";
+        QString dueDate = "2018-12-19";
+        name = QString::fromUtf8("8.1_CTS/CTSV R10 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        int val = util->dueDayCount(startDate,dueDate);
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+      break;
+   case SPEC_CTS_CTSV_R11:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-11-15";
+        QString dueDate;
+        name = QString::fromUtf8("8.1_CTS/CTSV R11 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        int val = util->dueDayCount(startDate,dueDate);;
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+      break;
+    case SPEC_GTS_R2:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-10-20";
+        QString dueDate = "2019-01-02";
+        name = QString::fromUtf8("GTS_R2 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        int val = util->dueDayCount(startDate,dueDate);
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+      break;
+    case SPEC_GTS_R3:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-12-15";
+        QString dueDate;
+        name = QString::fromUtf8("GTS_R3 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        int val = util->dueDayCount(startDate,dueDate);
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+      break;
+    case SPEC_8_STS_R12:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-11-01";
+        QString dueDate = "2018-12-31";
+        name = QString::fromUtf8("8.1_STS_R12 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        int val = util->dueDayCount(startDate,dueDate);
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+      break;
+    case SPEC_8_STS_R19_01:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-12-01";
+        QString dueDate = "2019-01-31";
+        name = QString::fromUtf8("8.1_STS_R19_01 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        int val = util->dueDayCount(startDate,dueDate);
+        if(val < 0){
+            status = FAIL;
+        }else{
+            status = val < DAY_LIMIT ? WARNING : PASS;
+        }
+        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
+    }
+      break;
+    case SPEC_VTS_GSI:
+    {
+        int DAY_LIMIT = 10;
+        QString startDate = "2018-10-25";
+        QString dueDate;
+        name = QString::fromUtf8("8.1_VTS/CTS-on-GSI 工具有效期检测");
+        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
+        status = PASS;
+        result = QString::fromUtf8("截止日期暂未确定");
+    }
+      break;
     }
 }
 

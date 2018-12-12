@@ -33,7 +33,7 @@ public:
     static const QString NAV_GO;
     static const QString GOOGLE_MESSAGE;
     static const QString QUICK_SEARCH_BOX;
-     static const QString SPEECH_SERVICES;
+    static const QString SPEECH_SERVICES;
     PackageTest(QString device,QString package,bool expect = true,QString name = "");
     void run();
     QString getName();

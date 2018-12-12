@@ -73,16 +73,25 @@ QList<SpecTest *> SpecBuilder::create()
         //为Express+项目添加的测试条例
         addExpressTests();
     }
+    if(util->isAndroid8()){
+         //为Android8.0项目添加的测试条例
+        addAndroid8();
+    }
     return list;
 }
 
 void SpecBuilder::addCommonTests()
 {
     list.append(new DefaultTest(device,DefaultTest::SPEC_IS_GMS_GO));
-    //    list.append(new FeatureTest(device,"com.google.android.feature.EEA_DEVICE",QString::fromUtf8("com.google.android.feature.EEA_DEVICE(欧盟)")));
+
+    //   list.append(new FeatureTest(device,"com.google.android.feature.EEA_DEVICE",QString::fromUtf8("com.google.android.feature.EEA_DEVICE(欧盟)")));
     //   list.append(new FeatureTest(device,"com.google.android.paid.search",QString::fromUtf8("com.google.android.paid.search(欧盟)")));
     //   list.append(new FeatureTest(device,"com.google.android.paid.chrome",QString::fromUtf8("com.google.android.paid.chrome(欧盟)")));
+    //2018/12/05 zhaocongcong 将上诉三个声明修改为同时检测
+    list.append(new DefaultTest(device,DefaultTest::SPEC_EEADCS));
     list.append(new PropTest(device,PropTest::PROP_SECURITY,QString::fromUtf8("安全Patch")));
+    //2018/12/10  zhaocongcong 更新patch截止日期检测
+    list.append(new DefaultTest(device,DefaultTest::SPEC_PATCH_VALID,"否"));
     list.append(new PropTest(device,PropTest::PROP_BOARD));
     list.append(new PropTest(device,PropTest::PROP_BRAND));
     list.append(new PropTest(device,PropTest::PROP_DEVICE));
@@ -90,6 +99,8 @@ void SpecBuilder::addCommonTests()
     list.append(new PropTest(device,PropTest::PROP_MODEL));
     list.append(new PropTest(device,PropTest::PROP_NAME));
     list.append(new PropTest(device,PropTest::PROP_GMS_VERSION,QString::fromUtf8("GMS包版本")));
+    //2018/12/10  zhaocongcong 更新GMS package截止日期检测
+    list.append(new DefaultTest(device,DefaultTest::SPEC_8_GMS_PACKAGE,"否"));
     list.append(new PropTest(device,PropTest::PROP_FINGERPRINT_1));
     list.append(new PropTest(device,PropTest::PROP_FINGERPRINT_2));
     list.append(new PropTest(device,PropTest::PROP_FINGERPRINT_3));
@@ -116,7 +127,6 @@ void SpecBuilder::addCommonTests()
     list.append(new DefaultTest(device,DefaultTest::SPEC_ILLEGAL_FONTS));
     list.append(new DefaultTest(device,DefaultTest::SPEC_FINGERPRINT_INCREMENTAL));
     list.append(new DefaultTest(device,DefaultTest::SPEC_DEFAULT_ASSISTANT));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_PATCH_VALID,"Yes"));
     list.append(new PackageTest(device,"com.google.android.ims",true,"Carrier Service"));
     list.append(new PackageTest(device,PackageTest::GOOGLE_MESSAGE));
     list.append(new PackageTest(device,PackageTest::CHROME));
@@ -130,8 +140,8 @@ void SpecBuilder::addCommonTests()
     list.append(new DefaultTest(device,DefaultTest::SPEC_BLUETOOTH_OFF));
     list.append(new DefaultTest(device,DefaultTest::SPEC_ROTATION_OFF));
     // 2018/12/03 zhaocongcong 添加 包含android.software.device_admin 不包含android.software.managed_users
-    list.append(new FeatureTest(device,"android.software.device_admin",QString::fromUtf8("是否包含android.software.device_admin"),QString::fromUtf8("包含")));
-    list.append(new FeatureTest(device,"android.software.managed_users",QString::fromUtf8("是否包含android.software.managed_users"),QString::fromUtf8("不包含")));
+    list.append(new FeatureTest(device,"android.software.device_admin",QString::fromUtf8("是否包含android.software.device_admin"),QString::fromUtf8("已声明")));
+    list.append(new FeatureTest(device,"android.software.managed_users",QString::fromUtf8("是否包含android.software.managed_users"),QString::fromUtf8("未声明")));
     // 2018/12/03 zhaocongcong 添加 查看文件不包含服务：simalliance.openmobileapi.service
     list.append(new DefaultTest(device,DefaultTest::SPEC_OPENMOBILEAPI));
     // 2018/12/04 zhaocongcong 添加 google speech services 检查
@@ -142,6 +152,7 @@ void SpecBuilder::addGoTests()
 {
     list.append(new PackageTest(device,PackageTest::GOOGLE_GO));
     list.append(new PackageTest(device,PackageTest::YOUTUBE_GO));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_YOUTUBE_GO,">=1.18.57"));
     list.append(new PackageTest(device,PackageTest::GMAIL_GO));
     list.append(new PackageTest(device,PackageTest::MAPS_GO));
     list.append(new PackageTest(device,PackageTest::ASSITANT_GO));
@@ -190,3 +201,16 @@ void SpecBuilder::addExpressTests()
     list.append(new PackageTest(device,"com.android.wallpaper.livepicker",false));
     list.append(new PackageTest(device,"com.android.facelock",false));
 }
+
+void SpecBuilder::addAndroid8()
+{
+    // 2018/12/12 zhaocongcong 添加 工具有效期检测
+    list.append(new DefaultTest(device,DefaultTest::SPEC_CTS_CTSV_R10));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_CTS_CTSV_R11));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_GTS_R2));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_GTS_R3));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_8_STS_R12));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_8_STS_R19_01));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_VTS_GSI));
+}
+

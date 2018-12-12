@@ -9,7 +9,7 @@
 #include <QMap>
 
 class SpecUtil
-{    
+{
 private :
     SpecUtil(QString device);
 public:
@@ -98,6 +98,9 @@ public:
      * 返回system区剩余可用空间
      */
     int systemAvailable();
+    int gmsVersionDayCount();
+    int dueDayCount(QString startDate,QString dueDate);
+    bool isAndroid8();
 private:
     static QString device;
     static SpecUtil* sInstance;

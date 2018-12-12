@@ -53,6 +53,7 @@ public:
      * Express+项目的测试项
      */
     void addExpressTests();
+    void addAndroid8();
 private:
     QString device;
     QString testType;

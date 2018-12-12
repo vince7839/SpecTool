@@ -86,6 +86,11 @@ bool SpecUtil::isGoVersion()
     return getProp(PropTest::PROP_GMS_VERSION).contains("go");
 }
 
+bool SpecUtil::isAndroid8()
+{
+    return getProp(PropTest::PROP_RELEASE).contains("8.");
+}
+
 bool SpecUtil::ramLimit()
 {
     QString output = Executor::waitFinish(QString("adb -s %1 shell cat proc/meminfo").arg(device));
@@ -120,9 +125,81 @@ int SpecUtil::patchDayCount()
     QString date = getProp(PropTest::PROP_SECURITY);
     QRegExp re("([0-9]+)-([0-9]+)-([0-9]+)");
     if(re.exactMatch(date)){
+        //打patch时间
         QDate patchDate = QDate::fromString(date,"yyyy-MM-dd");
+        //截止时间 = patch时间加2个月
+        QDate dueDate = patchDate.addMonths(2);
+        //当前时间
         QDate now = QDate::currentDate();
-        dayCount = qAbs(patchDate.daysTo(now));
+        if(now < dueDate){
+            dayCount = qAbs(now.daysTo(dueDate));
+        }else{
+            dayCount = -qAbs(now.daysTo(dueDate));
+        }
+    }
+    return dayCount;
+}
+
+
+int SpecUtil::gmsVersionDayCount()
+{
+    int dayCount = 0;
+    QString date = getProp(PropTest::PROP_GMS_VERSION);
+    QString gmsDate;
+    QString data1 = "201809";
+    QString data2 = "201810";
+    if(date.contains(data1)){
+        gmsDate = "2018-09-24";
+    }else if(date.contains(data2)){
+        gmsDate = "2018-10-16";
+    }else{
+        gmsDate = date.mid(4,4)+"-"+date.mid(8,2)+"-"+"16";
+    }
+    QRegExp re("([0-9]+)-([0-9]+)-([0-9]+)");
+    if(re.exactMatch(gmsDate)){
+        //GMSVERSION时间
+        QDate gmsVersionDate = QDate::fromString(gmsDate,"yyyy-MM-dd");
+        //截止时间 = GMSVERSION时间加3个月
+        QDate dueDate = gmsVersionDate.addMonths(3);
+        //当前时间
+        QDate now = QDate::currentDate();
+        if(now < dueDate){
+            dayCount = qAbs(now.daysTo(dueDate));
+        }else{
+            dayCount = -qAbs(now.daysTo(dueDate));
+        }
+    }
+    return dayCount;
+}
+
+int SpecUtil::dueDayCount(QString startDate,QString dueDate)
+{
+    int dayCount = 0;
+    QRegExp re("([0-9]+)-([0-9]+)-([0-9]+)");
+    if(dueDate.isEmpty()){
+        if(re.exactMatch(startDate)){
+            QDate dieDate = QDate::fromString(startDate,"yyyy-MM-dd");
+            //截止时间 = 开始时间加2个月
+            QDate dueDate = dieDate.addMonths(2);
+            //当前时间
+            QDate now = QDate::currentDate();
+            if(now < dueDate){
+                dayCount = qAbs(now.daysTo(dueDate));
+            }else{
+                dayCount = -qAbs(now.daysTo(dueDate));
+            }
+        }
+    }else{
+        if(re.exactMatch(dueDate)){
+             QDate dieDate = QDate::fromString(dueDate,"yyyy-MM-dd");
+             //当前时间
+             QDate now = QDate::currentDate();
+             if(now < dieDate){
+                  dayCount = qAbs(now.daysTo(dieDate));
+             }else{
+                  dayCount = -qAbs(now.daysTo(dieDate));
+             }
+        }
     }
     return dayCount;
 }

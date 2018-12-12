@@ -27,11 +27,12 @@ QString FeatureTest::getExpect()
 
 SpecTest::Status FeatureTest::getStatus()
 {
-    return UNKNOWN;
+    return status;
 }
 
 void FeatureTest::run()
 {
     SpecUtil* util = SpecUtil::getInstance(device);
-    result = QString::fromUtf8(util->hasFeature(feature) ? "已声明" : "未声明");
+    result = QString::fromUtf8(util->hasFeature(feature) ? "已声明" : "未声明");    
+    status = expect == result ? PASS : FAIL;
 }
