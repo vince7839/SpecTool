@@ -7,10 +7,6 @@
 #include<test/packagetest.h>
 #include<test/intenttest.h>
 #include<QThread>
-const QString DefaultTest::FEATURE_RU = "com.google.android.feature.RU";
-const QString DefaultTest::EEA_DEVICE = "com.google.android.feature.EEA_DEVICE";
-const QString DefaultTest::PAID_SEARCH = "com.google.android.paid.search";
-const QString DefaultTest::PAID_CHROME = "com.google.android.paid.chrome";
 DefaultTest::DefaultTest(QString device,SpecType type, QString expect)
 {
     this->device = device;
@@ -23,8 +19,11 @@ void DefaultTest::run()
 {
     switch(type){
     case SPEC_IS_RU:
+    {
+        QString FEATURE_RU = "com.google.android.feature.RU";
         name = QString::fromUtf8("是否俄罗斯市场");
         result = util->hasFeature(FEATURE_RU) ? "Yes" : "No" ;
+    }
         break;
     case SPEC_IS_GMS_GO:
         name = QString::fromUtf8("GMS包是否为Go版本");
@@ -100,13 +99,14 @@ void DefaultTest::run()
     {
         int DAY_LIMIT = util->isExpress() ? 20 : 20;
         name = QString::fromUtf8("安全Patch距离截止日期是否%1天之内").arg(DAY_LIMIT);
-        int val = util->patchDayCount();
-        if(val < 0){
+        int remainingDay = util->patchRemainingDay();
+        if(remainingDay < 0){
             status = FAIL;
+             result = QString::fromUtf8("已超出截止日期%1天").arg(-remainingDay);
         }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
+            status = remainingDay < DAY_LIMIT ? WARNING : PASS;
+            result = QString::fromUtf8("距离截止日期还有%1天").arg(remainingDay);
         }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
         break;
     case SPEC_8_GMS_PACKAGE:
@@ -122,14 +122,14 @@ void DefaultTest::run()
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
         break;
-//    case SPEC_7_GMS_PACKAGE:
-//    {
-//        int DAY_LIMIT = 20;
-//        name = QString::fromUtf8("GMS包版本距离截止日期是否%1天之内").arg(DAY_LIMIT);
-//        status = PASS;
-//        result = QString::fromUtf8("永久有效");
-//    }
-//        break;
+        //    case SPEC_7_GMS_PACKAGE:
+        //    {
+        //        int DAY_LIMIT = 20;
+        //        name = QString::fromUtf8("GMS包版本距离截止日期是否%1天之内").arg(DAY_LIMIT);
+        //        status = PASS;
+        //        result = QString::fromUtf8("永久有效");
+        //    }
+        //        break;
     case SPEC_FINGERPRINT_LIMIT:{
         name = QString::fromUtf8("fingerprint命名规范");
         expect = QString::fromUtf8("不含andorid,google,alps等");
@@ -156,8 +156,13 @@ void DefaultTest::run()
         break;
     case SPEC_FOTA_VERSION:{
         name = QString::fromUtf8("广生FOTA版本>=5.22");
-        result = Executor::waitFinish("adb shell dumpsys package com.adups.fota|grep versionName").trimmed().split("=").last();
-        status = result >= "5.22" ? PASS : FAIL;
+        if(util->hasPackage("com.adups.fota")){
+            result = Executor::waitFinish("adb shell dumpsys package com.adups.fota|grep versionName").trimmed().split("=").last();
+            status = result >= "5.22" ? PASS : FAIL;
+        }else{
+            result = QString::fromUtf8("未预置");
+            status = PASS;
+        }
     }
         break;
     case SPEC_YOUTUBE_GO:
@@ -172,7 +177,9 @@ void DefaultTest::run()
         name = QString::fromUtf8("data分区大小");
         int kb = util->dataSize();
         float limitGb = 0;
-        if(kb > 1024*1024*4) {
+        if(kb > 1024*1024*8) {
+            limitGb = 11;
+        }else if(kb > 1024*1024*4) {
             limitGb = 5.1;
         }else{
             limitGb = 1.5;
@@ -307,60 +314,52 @@ void DefaultTest::run()
         QFile::remove(copyName);
     }
         break;
-    // 2018/11/28 zhaocongcong 添加EEA规范检查
+        // 2018/11/28 zhaocongcong 添加EEA规范检查
     case SPEC_MAPVIEW_V1:
     {
-            name = QString::fromUtf8("EEA规范检查 MapView V1 Library检测");
-            expect = QString::fromUtf8("存在");
-            QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.maps.jar\"").arg(device));
-            if(content.isEmpty()){
-                result = QString::fromUtf8("项目未检测到 MapView V1 Library");
-                status = FAIL;
-            }else{
-                result = QString::fromUtf8("项目已检测到 MapView V1 Library");
-                status = PASS;
-            }
-     }
+        name = QString::fromUtf8("MapView V1 Library检测");
+        expect = QString::fromUtf8("存在");
+        QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.maps.jar\"").arg(device));
+        status = content.isEmpty() ? FAIL : PASS;
+        result = QString::fromUtf8(status == PASS ? "存在" : "不存在");
+    }
         break;
     case SPEC_GOOGLE_MEDIA_EFFECTS:
     {
-            name = QString::fromUtf8("EEA规范检查 Google Media Effects Library检测");
-            expect = QString::fromUtf8("存在");
-            QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.media.effects.jar\"").arg(device));
-            if(content.isEmpty()){
-                result = QString::fromUtf8("项目未检测到 Google Media Effects Library");
-                status = FAIL;
-            }else{
-                result = QString::fromUtf8("项目已检测到 Google Media Effects Library");
-                status = PASS;
-            }
+        name = QString::fromUtf8("Google Media Effects Library检测");
+        expect = QString::fromUtf8("存在");
+        QString content = Executor::waitFinish(QString("adb -s %1 shell \"find /system/framework/ -name com.google.android.media.effects.jar\"").arg(device));
+        status = content.isEmpty() ? FAIL : PASS;
+        result = QString::fromUtf8(status == PASS ? "存在" : "不存在");
     }
-       break;
-   case SPEC_OPENMOBILEAPI:
+        break;
+    case SPEC_OPENMOBILEAPI:
     {
-            name = QString::fromUtf8("查看文件是否包含服务：simalliance.openmobileapi.service");
-            QString content = Executor::waitFinish(QString("adb -s %1 shell service list").arg(device));
-            status = content.contains("simalliance.openmobileapi.service")? FAIL : PASS;
-            result = QString::fromUtf8(status == PASS ? "未包含" : "已包含");
-            expect = QString::fromUtf8("未包含");
-        }
-       break;
-   case SPEC_EEADCS:
+        name = QString::fromUtf8("Open Mobile API服务是否存在");
+        QString content = Executor::waitFinish(QString("adb -s %1 shell service list").arg(device));
+        status = content.contains("simalliance.openmobileapi.service") ? FAIL : PASS;
+        result = status == PASS ? "No" : "Yes";
+        expect = "No";
+    }
+        break;
+    case SPEC_IS_EEA:
     {
+        const QString PAID_SEARCH = "com.google.android.paid.search";
+        const QString PAID_CHROME = "com.google.android.paid.chrome";
         name = QString::fromUtf8("是否为欧盟市场");
-        expect = QString::fromUtf8("同时声明");
-        QString result1 = QString::fromUtf8(util->hasFeature(EEA_DEVICE) ? "已声明" : "未声明" ) + "com.google.android.feature.EEA_DEVICE(欧盟)\n";
-        QString result2 = QString::fromUtf8(util->hasFeature(PAID_SEARCH) ? "已声明" : "未声明" ) + "com.google.android.paid.search(欧盟)\n";
-        QString result3 = QString::fromUtf8(util->hasFeature(PAID_CHROME) ? "已声明" : "未声明" ) + "com.google.android.paid.chrome(欧盟)";
-        result = result1 + result2 + result3;
-        if(util->hasFeature(EEA_DEVICE) && util->hasFeature(PAID_SEARCH) && util->hasFeature(PAID_CHROME)){
-            status = PASS;
+        bool eea = util->isEEA();
+        bool paidSearch = util->hasFeature(PAID_SEARCH);
+        bool paidChrome = util->hasFeature(PAID_CHROME);
+        if(eea){
+            status = paidChrome && paidSearch ? PASS : FAIL;
+            result =  QString::fromUtf8("%1满足Type 4c要求").arg(paidChrome && paidSearch ? "" : "不");
         }else{
-            status = FAIL;
+            status = PASS;
+            result = "No";
         }
     }
-       break;
-   case SPEC_CTS_CTSV_R10:
+        break;
+    case SPEC_CTS_CTSV_R10:
     {
         int DAY_LIMIT = 10;
         QString startDate = "2018-10-15";
@@ -375,8 +374,8 @@ void DefaultTest::run()
         }
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
-      break;
-   case SPEC_CTS_CTSV_R11:
+        break;
+    case SPEC_CTS_CTSV_R11:
     {
         int DAY_LIMIT = 10;
         QString startDate = "2018-11-15";
@@ -391,7 +390,7 @@ void DefaultTest::run()
         }
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
-      break;
+        break;
     case SPEC_GTS_R2:
     {
         int DAY_LIMIT = 10;
@@ -407,7 +406,7 @@ void DefaultTest::run()
         }
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
-      break;
+        break;
     case SPEC_GTS_R3:
     {
         int DAY_LIMIT = 10;
@@ -423,7 +422,7 @@ void DefaultTest::run()
         }
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
-      break;
+        break;
     case SPEC_8_STS_R12:
     {
         int DAY_LIMIT = 10;
@@ -439,7 +438,7 @@ void DefaultTest::run()
         }
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
-      break;
+        break;
     case SPEC_8_STS_R19_01:
     {
         int DAY_LIMIT = 10;
@@ -455,7 +454,7 @@ void DefaultTest::run()
         }
         result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
-      break;
+        break;
     case SPEC_VTS_GSI:
     {
         int DAY_LIMIT = 10;
@@ -466,7 +465,7 @@ void DefaultTest::run()
         status = PASS;
         result = QString::fromUtf8("截止日期暂未确定");
     }
-      break;
+        break;
     }
 }
 

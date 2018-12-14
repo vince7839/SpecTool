@@ -15,6 +15,7 @@ InfoWidget::InfoWidget(QWidget *parent) :
     ui(new Ui::InfoWidget)
 {
     ui->setupUi(this);
+    setWindowFlags(Qt::Tool);
     setWindowTitle(QString::fromUtf8("更新历史"));
     setWindowModality(Qt::ApplicationModal);
     QSettings settings("Sagereal","SpecTool");

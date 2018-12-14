@@ -55,9 +55,9 @@ public:
     bool ramLimit();
 
     /*
-     * 返回安全patch至今的天数
+     * 返回安全patch距离截止日期的天数
      */
-    int patchDayCount();
+    int patchRemainingDay();
 
     /*
      * 是否含有某个Feature
@@ -101,6 +101,7 @@ public:
     int gmsVersionDayCount();
     int dueDayCount(QString startDate,QString dueDate);
     bool isAndroid8();
+    bool isEEA();
 private:
     static QString device;
     static SpecUtil* sInstance;

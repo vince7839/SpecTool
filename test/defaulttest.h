@@ -11,10 +11,6 @@
 class DefaultTest : public SpecTest
 {
 public:
-    static const QString FEATURE_RU;
-    static const QString EEA_DEVICE;
-    static const QString PAID_SEARCH;
-    static const QString PAID_CHROME;
     enum SpecType{
         SPEC_IS_GMS_GO,
         SPEC_IS_RU,
@@ -47,7 +43,7 @@ public:
         SPEC_GOOGLE_MEDIA_EFFECTS,
         SPEC_OPENMOBILEAPI,
         // 2018/12/04 zhaocongcong 添加 EEA_DEVICE,search,chrome的同时检测
-        SPEC_EEADCS,
+        SPEC_IS_EEA,
         // 2018/12/10 zhaocongcong 添加 GMS package截止日期检测
         SPEC_8_GMS_PACKAGE,
         // SPEC_7_GMS_PACKAGE,

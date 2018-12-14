@@ -91,6 +91,11 @@ bool SpecUtil::isAndroid8()
     return getProp(PropTest::PROP_RELEASE).contains("8.");
 }
 
+bool SpecUtil::isEEA()
+{
+    return hasFeature("com.google.android.feature.EEA_DEVICE");
+}
+
 bool SpecUtil::ramLimit()
 {
     QString output = Executor::waitFinish(QString("adb -s %1 shell cat proc/meminfo").arg(device));
@@ -119,23 +124,19 @@ bool SpecUtil::hasPackage(QString package)
     return exist;
 }
 
-int SpecUtil::patchDayCount()
+int SpecUtil::patchRemainingDay()
 {
     int dayCount = 0;
     QString date = getProp(PropTest::PROP_SECURITY);
     QRegExp re("([0-9]+)-([0-9]+)-([0-9]+)");
     if(re.exactMatch(date)){
-        //打patch时间
+        //patch起始时间
         QDate patchDate = QDate::fromString(date,"yyyy-MM-dd");
         //截止时间 = patch时间加2个月
         QDate dueDate = patchDate.addMonths(2);
         //当前时间
         QDate now = QDate::currentDate();
-        if(now < dueDate){
-            dayCount = qAbs(now.daysTo(dueDate));
-        }else{
-            dayCount = -qAbs(now.daysTo(dueDate));
-        }
+        dayCount = now.daysTo(dueDate);
     }
     return dayCount;
 }

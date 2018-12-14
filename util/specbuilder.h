@@ -54,6 +54,7 @@ public:
      */
     void addExpressTests();
     void addAndroid8();
+    void addEeaTests();
 private:
     QString device;
     QString testType;

@@ -77,18 +77,17 @@ QList<SpecTest *> SpecBuilder::create()
          //为Android8.0项目添加的测试条例
         addAndroid8();
     }
+    if(util->isEEA()){
+       addEeaTests();
+    }
     return list;
 }
 
 void SpecBuilder::addCommonTests()
 {
     list.append(new DefaultTest(device,DefaultTest::SPEC_IS_GMS_GO));
-
-    //   list.append(new FeatureTest(device,"com.google.android.feature.EEA_DEVICE",QString::fromUtf8("com.google.android.feature.EEA_DEVICE(欧盟)")));
-    //   list.append(new FeatureTest(device,"com.google.android.paid.search",QString::fromUtf8("com.google.android.paid.search(欧盟)")));
-    //   list.append(new FeatureTest(device,"com.google.android.paid.chrome",QString::fromUtf8("com.google.android.paid.chrome(欧盟)")));
     //2018/12/05 zhaocongcong 将上诉三个声明修改为同时检测
-    list.append(new DefaultTest(device,DefaultTest::SPEC_EEADCS));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_IS_EEA));
     list.append(new PropTest(device,PropTest::PROP_SECURITY,QString::fromUtf8("安全Patch")));
     //2018/12/10  zhaocongcong 更新patch截止日期检测
     list.append(new DefaultTest(device,DefaultTest::SPEC_PATCH_VALID,"否"));
@@ -107,7 +106,6 @@ void SpecBuilder::addCommonTests()
     list.append(new PropTest(device,PropTest::PROP_CLIENTID));
     //   list.append(new PropTest(device,PropTest::PROP_CLIENTID_AM));
     //   list.append(new PropTest(device,PropTest::PROP_CLIENTID_YT));
-    qDebug()<<"-----"<<(util == NULL);
     list.append(new PropTest(device,PropTest::PROP_RCSA,"ACSA",util->hasPackage(PackageTest::GOOGLE_MESSAGE) ? "true" : "false"));
     list.append(new PropTest(device,PropTest::PROP_LOW_RAM,QString::fromUtf8("是否低内存（LOW RAM）"),util->isGoVersion() ? "true":"false"));
     list.append(new DefaultTest(device,DefaultTest::SPEC_FINGERPRINT_USER,"Yes"));
@@ -132,9 +130,6 @@ void SpecBuilder::addCommonTests()
     list.append(new PackageTest(device,PackageTest::CHROME));
     list.append(new PackageTest(device,PackageTest::PLAY_STORE));
     list.append(new PackageTest(device,PackageTest::NAV_GO,true));
-    // 2018/11/28 zhaocongcong 添加 EEA规范检查
-    list.append(new DefaultTest(device,DefaultTest::SPEC_MAPVIEW_V1));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_GOOGLE_MEDIA_EFFECTS));
     // 2018/11/30 zhaocongcong 添加 测试建议 普通规范也需要检测蓝牙默认关闭，location默认高精度，自动旋转默认关闭等
     list.append(new DefaultTest(device,DefaultTest::SPEC_LOCATION_MODE));
     list.append(new DefaultTest(device,DefaultTest::SPEC_BLUETOOTH_OFF));
@@ -212,5 +207,11 @@ void SpecBuilder::addAndroid8()
     list.append(new DefaultTest(device,DefaultTest::SPEC_8_STS_R12));
     list.append(new DefaultTest(device,DefaultTest::SPEC_8_STS_R19_01));
     list.append(new DefaultTest(device,DefaultTest::SPEC_VTS_GSI));
+}
+
+void SpecBuilder::addEeaTests()
+{
+    list.append(new DefaultTest(device,DefaultTest::SPEC_MAPVIEW_V1));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_GOOGLE_MEDIA_EFFECTS));
 }
 
