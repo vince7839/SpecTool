@@ -1,0 +1,16 @@
+<SpecTool>
+
+<Version>2018-1-1</Vesion>
+
+<GmsPackage>
+<package version="8.1_201809.go" start="2018-1-1" end="2018-10-10"/>
+<GmsPackage/>
+
+<TestTool>
+<tool name="" start="" end=""/>
+</TestTool>
+
+<Broadcast priority="">
+
+<Broadcast/>
+</SpecTool>
