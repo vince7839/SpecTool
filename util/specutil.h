@@ -7,7 +7,7 @@
  */
 
 #include <QMap>
-
+#include<QDate>
 class SpecUtil
 {
 private :
@@ -98,7 +98,7 @@ public:
      * 返回system区剩余可用空间
      */
     int systemAvailable();
-    int gmsVersionDayCount();
+    QDate gmsDeadline();
     int dueDayCount(QString startDate,QString dueDate);
     bool isAndroid8();
     bool isEEA();

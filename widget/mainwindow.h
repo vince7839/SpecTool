@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include<util/devicelistener.h>
 #include<QProgressDialog>
-
+#include<util/system.h>
 namespace Ui {
     class MainWindow;
 }
@@ -29,6 +29,7 @@ protected:
 private:
     DeviceListener* listener ;
     QProgressDialog* dialog;
+    QProgressDialog* downloadDialog;
     Ui::MainWindow *ui;
 };
 

@@ -1,8 +1,8 @@
 <RCC>
     <qresource prefix="/resource">
         <file alias="app_icon">resource/icon.png</file>
-        <file alias="info_txt">resource/info.txt</file>
         <file alias="report_html">resource/report.html</file>
         <file alias="intent_test_apk">resource/IntentTest.apk</file>
+        <file alias="info_xml">resource/info.xml</file>
     </qresource>
 </RCC>

@@ -74,11 +74,11 @@ QList<SpecTest *> SpecBuilder::create()
         addExpressTests();
     }
     if(util->isAndroid8()){
-         //为Android8.0项目添加的测试条例
+        //为Android8.0项目添加的测试条例
         addAndroid8();
     }
     if(util->isEEA()){
-       addEeaTests();
+        addEeaTests();
     }
     return list;
 }
@@ -99,7 +99,7 @@ void SpecBuilder::addCommonTests()
     list.append(new PropTest(device,PropTest::PROP_NAME));
     list.append(new PropTest(device,PropTest::PROP_GMS_VERSION,QString::fromUtf8("GMS包版本")));
     //2018/12/10  zhaocongcong 更新GMS package截止日期检测
-    list.append(new DefaultTest(device,DefaultTest::SPEC_8_GMS_PACKAGE,"否"));
+    list.append(new DefaultTest(device,DefaultTest::SPEC_GMS_VALID,"否"));
     list.append(new PropTest(device,PropTest::PROP_FINGERPRINT_1));
     list.append(new PropTest(device,PropTest::PROP_FINGERPRINT_2));
     list.append(new PropTest(device,PropTest::PROP_FINGERPRINT_3));
@@ -199,14 +199,7 @@ void SpecBuilder::addExpressTests()
 
 void SpecBuilder::addAndroid8()
 {
-    // 2018/12/12 zhaocongcong 添加 工具有效期检测
-    list.append(new DefaultTest(device,DefaultTest::SPEC_CTS_CTSV_R10));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_CTS_CTSV_R11));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_GTS_R2));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_GTS_R3));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_8_STS_R12));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_8_STS_R19_01));
-    list.append(new DefaultTest(device,DefaultTest::SPEC_VTS_GSI));
+
 }
 
 void SpecBuilder::addEeaTests()

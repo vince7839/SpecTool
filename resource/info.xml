@@ -1,26 +1,42 @@
-<font color='green'>[2018-12-13]</font><font color='red'>*</font>
+<History>
+<publish time="2018-12-19">
+1.加入自动更新功能，启动的时候自动从服务器更新到最新版本
+2.gms组有重要信息时可以通过服务器推送到软件通知了
+</publish>
+<publish time="2018-12-13">
 1.增加GMS Package,Patch时间检测20天警告,GMS测试工具时间检测10天警告
 2.优化Google Assistant是否默认语音助手
-<font color='green'>[2018-12-11]</font></font>
+</publish>
+<publish time="2018-12-11">
 1.增加google speech services检测
 2.增加EEA MapView V1 Library检测 和EEA Google Media Effects Library检测
 3.普通规范检测增加蓝牙默认关闭，location默认高精度，自动旋转默认关闭
 4.增加android.software.device_admin和android.software.managed_users检测
-<font color='green'>[2018-11-27]</font></font>
+</publish>
+<publish time="2018-11-27">
 安装一个APK之后测试Google Assistant是否默认启动
-<font color='green'>[2018-11-26]</font>
+</publish>
+<publish time="2018-11-26">
 1.添加长按Home键是否启动Google Assistant的检测
 2.安全Patch警告更改为20天
-<font color='green'>[2018-11-21]</font>
+</publish>
+<publish time="2018-11-21">
 修复一个Express+的Gallery测试错误
-<font color='green'>[2018-11-20]</font>
+</publish>
+<publish time="2018-11-20">
 去掉和更改部分Express+检测，增加第三方字体名单。
-<font color='green'>[2018-11-14]</font>
+</publish>
+<publish time="2018-11-14">
 将报告改为和CTS相同的网页形式，方便GMS组检查
-<font color='green'>[2018-11-13]</font>
+</publish>
+<publish time="2018-11-13">
 增加google.xml中youtube的APP link检查，按照工具检查到的youtube版本进行判断
-<font color='green'>[2018-11-12]</font>
+</publish>
+<publish time="2018-11-12">
 1.增加system分区检查，4G标准130MB，8G标准220MB
 2.右键可以复测和复制命令，主要用于Express+的失败项
-<font color='green'>[2018-11-09]</font>
+</publish>
+<publish time="2018-11-09">
 增加Google Message，Carrier Service，ACSA排查
+</publish>
+</History>

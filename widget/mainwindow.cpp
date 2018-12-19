@@ -13,6 +13,13 @@
 #include<QApplication>
 #include<QDesktopWidget>
 #include<QDate>
+#include<util/networkutil.h>
+#include<QTemporaryFile>
+#include<QDir>
+#include<QProcess>
+#include<QStyleFactory>
+#include<util/updateutil.h>
+#include<widget/advicewidget.h>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -30,8 +37,11 @@ MainWindow::MainWindow(QWidget *parent) :
     helpMenu->addAction(QString::fromUtf8("关于"),this,&MainWindow::showAbout);
     helpMenu->addAction(QString::fromUtf8("更新历史"),this,&MainWindow::showInfo);
     this->menuBar()->addMenu(helpMenu);
-    init();
     moveToCenter(parent);
+    init();
+    if(!System::isWindows()){
+        QApplication::setStyle(QStyleFactory::create("GTK+"));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -69,17 +79,15 @@ void MainWindow::start()
     QString testType = ui->cbox_test->currentData().toString();
     builder->buildDevice(device)
             ->buildExpress(ui->checkBox_express->isChecked())
-       //     ->buildMpType(ui->checkBox_mp->isChecked())
             ->buildTestType(testType);
-       //     ->buildGmsRequired(ui->checkBox_gms->isChecked());
     SpecTestThread*thread = new SpecTestThread(builder);
     connect(thread,&SpecTestThread::testProgress,this,&MainWindow::updateProgressDialog);
     if(testType == "SPEC_TEST"){
         ResultWidget* w= new ResultWidget;
         connect(thread,&SpecTestThread::testFinished,w,&ResultWidget::showResult);
     }else{
-          SdkWidget*sdkWidget = new SdkWidget;
-          connect(thread,&SpecTestThread::testFinished,sdkWidget,&SdkWidget::showResult);
+        SdkWidget*sdkWidget = new SdkWidget;
+        connect(thread,&SpecTestThread::testFinished,sdkWidget,&SdkWidget::showResult);
     }
     thread->start();
 }
@@ -110,7 +118,7 @@ void MainWindow::init()
 {
     QSettings settings("Sagereal","SpecTool");
     if(settings.value("showAgain").toBool() || settings.value("currentVersion") != System::VERSION){
-        showInfo();
+      //  showInfo();
     }
     if(settings.value("currentVersion") != System::VERSION){
         settings.setValue("currentVersion",System::VERSION);
@@ -118,6 +126,11 @@ void MainWindow::init()
     if(!Executor::waitFinish("adb version").startsWith("Android Debug Bridge")){
         QMessageBox::warning(this,QString::fromUtf8("警告"),QString::fromUtf8("检测到adb未配置，功能无法正常使用!"));
     }
+
+    /*
+     * 开始检查是否有新版本
+     */
+    UpdateUtil::getInstance()->sendRequest();
 }
 
 void MainWindow::moveToCenter(QWidget*parent)

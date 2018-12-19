@@ -4,6 +4,7 @@
 #include<QDebug>
 #include<QDate>
 #include<util/system.h>
+#include<util/updateutil.h>
 QString SpecUtil::device;
 SpecUtil* SpecUtil::sInstance;
 SpecUtil::SpecUtil(QString device)
@@ -141,38 +142,6 @@ int SpecUtil::patchRemainingDay()
     return dayCount;
 }
 
-
-int SpecUtil::gmsVersionDayCount()
-{
-    int dayCount = 0;
-    QString date = getProp(PropTest::PROP_GMS_VERSION);
-    QString gmsDate;
-    QString data1 = "201809";
-    QString data2 = "201810";
-    if(date.contains(data1)){
-        gmsDate = "2018-09-24";
-    }else if(date.contains(data2)){
-        gmsDate = "2018-10-16";
-    }else{
-        gmsDate = date.mid(4,4)+"-"+date.mid(8,2)+"-"+"16";
-    }
-    QRegExp re("([0-9]+)-([0-9]+)-([0-9]+)");
-    if(re.exactMatch(gmsDate)){
-        //GMSVERSION时间
-        QDate gmsVersionDate = QDate::fromString(gmsDate,"yyyy-MM-dd");
-        //截止时间 = GMSVERSION时间加3个月
-        QDate dueDate = gmsVersionDate.addMonths(3);
-        //当前时间
-        QDate now = QDate::currentDate();
-        if(now < dueDate){
-            dayCount = qAbs(now.daysTo(dueDate));
-        }else{
-            dayCount = -qAbs(now.daysTo(dueDate));
-        }
-    }
-    return dayCount;
-}
-
 int SpecUtil::dueDayCount(QString startDate,QString dueDate)
 {
     int dayCount = 0;
@@ -192,14 +161,14 @@ int SpecUtil::dueDayCount(QString startDate,QString dueDate)
         }
     }else{
         if(re.exactMatch(dueDate)){
-             QDate dieDate = QDate::fromString(dueDate,"yyyy-MM-dd");
-             //当前时间
-             QDate now = QDate::currentDate();
-             if(now < dieDate){
-                  dayCount = qAbs(now.daysTo(dieDate));
-             }else{
-                  dayCount = -qAbs(now.daysTo(dieDate));
-             }
+            QDate dieDate = QDate::fromString(dueDate,"yyyy-MM-dd");
+            //当前时间
+            QDate now = QDate::currentDate();
+            if(now < dieDate){
+                dayCount = qAbs(now.daysTo(dieDate));
+            }else{
+                dayCount = -qAbs(now.daysTo(dieDate));
+            }
         }
     }
     return dayCount;
@@ -253,4 +222,15 @@ int SpecUtil::systemAvailable()
     }
     qDebug()<<"system available size:"<<kb;
     return kb;
+}
+
+QDate SpecUtil::gmsDeadline()
+{
+    QString gmsVersion = getProp(PropTest::PROP_GMS_VERSION);
+    QString dueDateStr = UpdateUtil::getInstance()->gmsEndDate(gmsVersion);
+    QDate dueDate;
+    if(!dueDateStr.isEmpty()){
+        dueDate = QDate::fromString(dueDateStr,"yyyy-MM-dd");
+    }
+    return dueDate;
 }

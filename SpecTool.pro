@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core  gui network
+QT       += core gui network xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -32,7 +32,10 @@ SOURCES +=\
     widget/sdkwidget.cpp \
     util/system.cpp \
     widget/infowidget.cpp \
-    widget/popwidget.cpp
+    widget/popwidget.cpp \
+    util/networkutil.cpp \
+    util/updateutil.cpp \
+    widget/advicewidget.cpp
 
 HEADERS  += \
     test/cmdtest.h \
@@ -54,13 +57,17 @@ HEADERS  += \
     widget/sdkwidget.h \
     util/system.h \
     widget/infowidget.h \
-    widget/popwidget.h
+    widget/popwidget.h \
+    util/networkutil.h \
+    util/updateutil.h \
+    widget/advicewidget.h
 
 FORMS    += \
     widget/mainwindow.ui \
     widget/resultwidget.ui \
     widget/sdkwidget.ui \
-    widget/infowidget.ui
+    widget/infowidget.ui \
+    widget/advicewidget.ui
 
 RESOURCES += \
     resource.qrc

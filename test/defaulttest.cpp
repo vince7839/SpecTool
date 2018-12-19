@@ -102,34 +102,34 @@ void DefaultTest::run()
         int remainingDay = util->patchRemainingDay();
         if(remainingDay < 0){
             status = FAIL;
-             result = QString::fromUtf8("已超出截止日期%1天").arg(-remainingDay);
+            result = QString::fromUtf8("已超出截止日期%1天").arg(-remainingDay);
         }else{
             status = remainingDay < DAY_LIMIT ? WARNING : PASS;
             result = QString::fromUtf8("距离截止日期还有%1天").arg(remainingDay);
         }
     }
         break;
-    case SPEC_8_GMS_PACKAGE:
+    case SPEC_GMS_VALID:
     {
-        int DAY_LIMIT = 20;
+        const int DAY_LIMIT = 20;
         name = QString::fromUtf8("GMS包版本距离截止日期是否%1天之内").arg(DAY_LIMIT);
-        int val = util->gmsVersionDayCount();
-        if(val < 0){
-            status = FAIL;
+        QDate now = QDate::currentDate();
+        QDate dueDate = util->gmsDeadline();
+        if(dueDate.isNull()){
+            result = QString::fromUtf8("未从服务器获取到截止日期");
+            status = WARNING;
         }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
+            int days = now.daysTo(dueDate);
+            if(days < 0){
+                status = FAIL;
+                result = QString::fromUtf8("已超过截止日期%1天").arg(-days);
+            }else{
+                status = days < DAY_LIMIT ? WARNING : PASS;
+                result = QString::fromUtf8("距离截止日期还有%1天").arg(days);
+            }
         }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
     }
         break;
-        //    case SPEC_7_GMS_PACKAGE:
-        //    {
-        //        int DAY_LIMIT = 20;
-        //        name = QString::fromUtf8("GMS包版本距离截止日期是否%1天之内").arg(DAY_LIMIT);
-        //        status = PASS;
-        //        result = QString::fromUtf8("永久有效");
-        //    }
-        //        break;
     case SPEC_FINGERPRINT_LIMIT:{
         name = QString::fromUtf8("fingerprint命名规范");
         expect = QString::fromUtf8("不含andorid,google,alps等");
@@ -357,113 +357,6 @@ void DefaultTest::run()
             status = PASS;
             result = "No";
         }
-    }
-        break;
-    case SPEC_CTS_CTSV_R10:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-10-15";
-        QString dueDate = "2018-12-19";
-        name = QString::fromUtf8("8.1_CTS/CTSV R10 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        int val = util->dueDayCount(startDate,dueDate);
-        if(val < 0){
-            status = FAIL;
-        }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
-        }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
-    }
-        break;
-    case SPEC_CTS_CTSV_R11:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-11-15";
-        QString dueDate;
-        name = QString::fromUtf8("8.1_CTS/CTSV R11 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        int val = util->dueDayCount(startDate,dueDate);;
-        if(val < 0){
-            status = FAIL;
-        }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
-        }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
-    }
-        break;
-    case SPEC_GTS_R2:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-10-20";
-        QString dueDate = "2019-01-02";
-        name = QString::fromUtf8("GTS_R2 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        int val = util->dueDayCount(startDate,dueDate);
-        if(val < 0){
-            status = FAIL;
-        }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
-        }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
-    }
-        break;
-    case SPEC_GTS_R3:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-12-15";
-        QString dueDate;
-        name = QString::fromUtf8("GTS_R3 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        int val = util->dueDayCount(startDate,dueDate);
-        if(val < 0){
-            status = FAIL;
-        }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
-        }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
-    }
-        break;
-    case SPEC_8_STS_R12:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-11-01";
-        QString dueDate = "2018-12-31";
-        name = QString::fromUtf8("8.1_STS_R12 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        int val = util->dueDayCount(startDate,dueDate);
-        if(val < 0){
-            status = FAIL;
-        }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
-        }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
-    }
-        break;
-    case SPEC_8_STS_R19_01:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-12-01";
-        QString dueDate = "2019-01-31";
-        name = QString::fromUtf8("8.1_STS_R19_01 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        int val = util->dueDayCount(startDate,dueDate);
-        if(val < 0){
-            status = FAIL;
-        }else{
-            status = val < DAY_LIMIT ? WARNING : PASS;
-        }
-        result = QString::fromUtf8("距离截止日期还有%1天").arg(val);
-    }
-        break;
-    case SPEC_VTS_GSI:
-    {
-        int DAY_LIMIT = 10;
-        QString startDate = "2018-10-25";
-        QString dueDate;
-        name = QString::fromUtf8("8.1_VTS/CTS-on-GSI 工具有效期检测");
-        expect = QString::fromUtf8("开始时间:%1").arg(startDate);
-        status = PASS;
-        result = QString::fromUtf8("截止日期暂未确定");
     }
         break;
     }
