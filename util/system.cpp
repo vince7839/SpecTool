@@ -76,3 +76,8 @@ QList<QMap<QString, QString> > System::versionHistory()
     }
     return history;
 }
+
+QString System::applicationName()
+{
+    return System::isWindows() ? "/SpecTool.exe" : "/SpecTool";
+}

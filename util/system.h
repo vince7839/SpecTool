@@ -22,6 +22,7 @@ public:
     static QString serverIP(AccessType type);
     static QString configUrl(AccessType type);
     static QList<QMap<QString,QString> > versionHistory();
+    static QString applicationName();
 };
 
 #endif // SYSTEM_H

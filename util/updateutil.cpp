@@ -99,17 +99,24 @@ void UpdateUtil::onDownloadReply()
         dialog->close();
     }
     QNetworkReply* reply = static_cast<QNetworkReply*>(sender());
-    qint64 dataSize = reply->bytesAvailable();
-    qDebug()<<"onDownloadReply data size:"<<dataSize;
-    if(dataSize <= 0){
+    if(reply->bytesAvailable() <= 0){
         return;
     }
+    /*
+     * windows系统无法删除打开的程序，所以先改名为old.exe，启动新程序后删除它
+     * linux则直接删除老版本
+     */
     QString currentFileName = qApp->applicationFilePath();
-    if(!QFile::remove(currentFileName)){
-        QMessageBox::information(0,QString::fromUtf8("提示"),QString::fromUtf8("删除老版本失败，你可以手动删除"));
+    if(System::isWindows()){
+        QString changeName = qApp->applicationDirPath().append("/old.exe");
+        QFile::remove(changeName);
+        QFile::rename(currentFileName,changeName);
+    }else{
+        if(!QFile::remove(currentFileName)){
+            QMessageBox::information(0,QString::fromUtf8("提示"),QString::fromUtf8("删除老版本失败，你可以手动删除"));
+        }
     }
-    QString newName = QDir::currentPath().append(System::isWindows() ? "/SpecTool.exe" : "/SpecTool");
-    qDebug()<<"Running filename:"<<currentFileName<<"Update filename:"<<newName;
+    QString newName = qApp->applicationDirPath().append(System::applicationName());
     QFile target(newName);
     if(target.open(QIODevice::ReadWrite|QIODevice::Truncate)){
         QByteArray byteArray = reply->readAll();

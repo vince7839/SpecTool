@@ -118,10 +118,17 @@ void MainWindow::init()
 {
     QSettings settings("Sagereal","SpecTool");
     if(settings.value("showAgain").toBool() || settings.value("currentVersion") != System::VERSION){
-      //  showInfo();
+        //  showInfo();
     }
+
+    /*
+     * 新版本启动后要做的事。删除老版本
+     */
     if(settings.value("currentVersion") != System::VERSION){
         settings.setValue("currentVersion",System::VERSION);
+        if(System::isWindows()){
+            QFile::remove("old.exe");
+        }
     }
     if(!Executor::waitFinish("adb version").startsWith("Android Debug Bridge")){
         QMessageBox::warning(this,QString::fromUtf8("警告"),QString::fromUtf8("检测到adb未配置，功能无法正常使用!"));
